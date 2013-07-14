@@ -1,0 +1,29 @@
+{
+  "name": "prismatic",
+  "version": "0.3.0",
+  "description": "review changes across multiple repositories",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": "",
+  "keywords": [
+    "github",
+    "organization",
+    "commit",
+    "review",
+    "multiple",
+    "repos"
+  ],
+  "author": "Pulse Energy",
+  "license": "MIT",
+  "dependencies": {
+    "underscore": "~1.5.1",
+    "request": "~2.22.0",
+    "express": "~3.3.4"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0"
+  }
+}
