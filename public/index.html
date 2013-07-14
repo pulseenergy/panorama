@@ -48,15 +48,27 @@ ul {
 	right: 0;
 	bottom: 0;
 	top: 0;
-	width: 400px;
+	width: 50%;
 	padding: 20px;
 	border-left: 1px solid #ccc;
 	background: #f0f0f0;
 }
 
+.details-commits {
+	height: 20%;
+	overflow-y: auto;
+}
+
 .details-user,
 .details-branch {
 	font-weight: bold;
+}
+
+.diff {
+	font-family: monospace;
+	width: 100%;
+	height: 70%;
+	min-height: 200px;
 }
 </style>
 <script src="js/reqwest.min.js" type="text/javascript"></script>
@@ -67,35 +79,49 @@ var viewModel = {
 	loading: ko.observable(true),
 	repos: ko.observableArray(),
 	selectedPush: ko.observable(),
+	selectedDiff: ko.observable(),
 
 	showPushDetails: function (push) {
-		//console.log(push)
+		// console.log(push)
 		viewModel.selectedPush(push);
+		viewModel.selectedDiff(null);
+		fetchDiff(push.repo, _.first(push.commits).sha);
 	}
 };
 
 window.onload = function () {
-
+	fetchPushes();
 	ko.applyBindings(viewModel);
+};
 
+function fetchPushes() {
 	reqwest({
 		url: '/pushes',
   		type: 'json'
   	}).then(function (response) {
   		viewModel.loading(false);
-
-  		repoPushMap = response;
   		viewModel.repos(_.map(response, function (value, key) {
   			return {
   				name: key,
   				pushes: value
   			};
   		}));
-  		//qwery('#content').html(resp.content);
   	}).fail(function (err, msg) {
-    	console.err(msg);
+    	console.error(msg);
   	});
-};
+}
+
+function fetchDiff(repo, sha) {
+	viewModel.selectedDiff(null);
+	reqwest({
+		url: '/diff/' + [repo, sha].join('/'),
+  		type: 'json'
+  	}).then(function (response) {
+  		viewModel.selectedDiff(response.patch)
+  	}).fail(function (err, msg) {
+  		console.error(msg);
+  	});
+}
 </script>
 
 <h1>Prismatic</h1>
@@ -113,6 +139,7 @@ window.onload = function () {
 	</div>
 </div>
 
+<!-- TODO: load more button -->
 
 <div id="details-pane" data-bind="visible: selectedPush(), with: selectedPush">
 	<header>
@@ -120,6 +147,8 @@ window.onload = function () {
 		<div><span class="details-user" data-bind="text: user.login"></span> pushed <span class="details-size" data-bind="text: size"></span> commits to <span class="details-branch" data-bind="text: branch"></span>:</div>
 	</header>
 	<ul class="details-commits" data-bind="foreach: commits">
-		<li><a target="_blank" data-bind="attr: { href: url }, text: sha.substr(0,5)"></a>: <span data-bind="text: message"></span></li>
+		<li><a target="_blank" data-bind="attr: { href: url.replace('api.github.com/repos', 'github.com').replace('/commits/', '/commit/') }, text: sha.substr(0,5)"></a>: <span data-bind="text: message"></span> <a href="#" data-bind="click: function () { fetchDiff($parent.repo, sha); }">diff</a></li>
 	</ul>
+	<textarea class="diff" data-bind="visible: $root.selectedDiff(), value: $root.selectedDiff">
+	</textarea>
 </div>
