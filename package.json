@@ -6,15 +6,11 @@
   "scripts": {
     "test": "grunt test"
   },
-  "repository": "",
-  "keywords": [
-    "github",
-    "organization",
-    "commit",
-    "review",
-    "multiple",
-    "repos"
-  ],
+  "repository": { 
+    "type" : "git"
+  , "url" : "http://github.com/pulseenergy/panorama.git"
+  },
+  "keywords": ["app", "github", "organization", "commits", "diff", "repositories", "code review"],
   "author": "Pulse Energy",
   "license": "MIT",
   "dependencies": {
