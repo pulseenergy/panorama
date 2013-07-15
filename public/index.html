@@ -33,6 +33,7 @@ ul {
 .push img {
 	width: 50px;
 	border-radius: 10px;
+	background: blue;
 }
 .commit-count {
 	position: absolute;
@@ -70,6 +71,9 @@ ul {
 	height: 70%;
 	min-height: 200px;
 }
+.date-range {
+	color: #999;
+}
 </style>
 <script src="js/reqwest.min.js" type="text/javascript"></script>
 <script src="js/knockout.min.js" type="text/javascript"></script>
@@ -78,6 +82,7 @@ ul {
 var viewModel = {
 	loading: ko.observable(true),
 	repos: ko.observableArray(),
+	startDate: ko.observable(),
 	selectedPush: ko.observable(),
 	selectedDiff: ko.observable(),
 
@@ -100,7 +105,8 @@ function fetchPushes() {
   		type: 'json'
   	}).then(function (response) {
   		viewModel.loading(false);
-  		viewModel.repos(_.map(response, function (value, key) {
+  		viewModel.startDate(new Date(response.start)); // TODO: better format
+  		viewModel.repos(_.map(response.map, function (value, key) {
   			return {
   				name: key,
   				pushes: value
@@ -124,7 +130,7 @@ function fetchDiff(repo, sha) {
 }
 </script>
 
-<h1>Prismatic</h1>
+<h1>panorama</h1>
 
 <span class="loading" data-bind="visible: loading">Loading...</span>
 
@@ -138,6 +144,8 @@ function fetchDiff(repo, sha) {
 		</ul>
 	</div>
 </div>
+
+<span class="date-range" data-bind="visible: startDate()">since <span data-bind="text: startDate"></span></span>
 
 <!-- TODO: load more button -->
 

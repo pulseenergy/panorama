@@ -1,5 +1,5 @@
 {
-  "name": "prismatic",
+  "name": "panorama",
   "version": "0.3.0",
   "description": "review changes across multiple repositories",
   "main": "index.js",
@@ -20,7 +20,8 @@
   "dependencies": {
     "underscore": "~1.5.1",
     "request": "~2.22.0",
-    "express": "~3.3.4"
+    "express": "~3.3.4",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
