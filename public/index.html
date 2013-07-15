@@ -39,6 +39,9 @@ ul {
 .push {
 	position: relative;
 }
+.push.selected img {
+	opacity: 1;
+}
 .push:hover {
 	cursor: pointer;
 }
@@ -46,6 +49,7 @@ ul {
 	width: 50px;
 	border-radius: 10px;
 	background: blue;
+	opacity: 0.5;
 }
 .commit-count {
 	position: absolute;
@@ -100,7 +104,10 @@ var viewModel = {
 	selectedDiff: ko.observable(),
 
 	showPushDetails: function (push) {
-		// console.log(push)
+		if (viewModel.selectedPush() && viewModel.selectedPush().id === push.id) {
+			return viewModel.selectedPush(null);
+		}
+		//console.log(push)
 		viewModel.selectedPush(push);
 		viewModel.selectedDiff(null);
 		fetchDiff(push.repo, _.first(push.commits).sha);
@@ -150,7 +157,7 @@ function fetchDiff(repo, sha) {
 	<div class="repo">
 		<h3 class="repo-name" data-bind="text: name"></h3>
 		<ul class="pushes" data-bind="foreach: pushes">
-			<li class="push" data-bind="click: $root.showPushDetails"><img data-bind="attr: { src: user.image, alt: user.login }"><span class="commit-count" data-bind="text: size"></span></li>
+			<li class="push" data-bind="click: $root.showPushDetails, css: { selected: $root.selectedPush() && $root.selectedPush().id === id }"><img data-bind="attr: { src: user.image, alt: user.login }"><span class="commit-count" data-bind="text: size"></span></li>
 			<!-- TODO: show branches as diff colour -->
 		</ul>
 	</div>
