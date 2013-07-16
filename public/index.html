@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8"/>
+
+<link rel="stylesheet" href="css/hint.css">
 <style>
 .app-name {
 	margin: 0;
@@ -69,20 +71,30 @@ ul {
 .push a:visited img {
 	border-color: white;
 }
+[data-hint]:after {
+	white-space: pre;
+}
 </style>
 <script src="js/reqwest.min.js" type="text/javascript"></script>
 <script src="js/knockout.min.js" type="text/javascript"></script>
 <script src="js/underscore.min.js" type="text/javascript"></script>
+<script src="js/moment.min.js" type="text/javascript"></script>
 <script>
 var viewModel = {
-	organization: 'pulseenergy',
+	organization: 'pulseenergy', // TODO
 	loading: ko.observable(true),
 	repos: ko.observableArray(),
 	startDate: ko.observable(),
 
 	getGithubLink: function (push) {
-		console.log(arguments)
 		return 'https://github.com/' + [viewModel.organization, push.repo, 'compare', push.before + '...' + push.head].join('/');
+	},
+	getTooltipText: function (push) {
+		var text = [moment(push.date).fromNow()];
+		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
+			return '‣ ' + msg;
+		});
+		return text.concat(messages).join('\n');
 	}
 };
 
@@ -119,7 +131,7 @@ function fetchPushes() {
 		<h3 class="repo-name" data-bind="text: name"></h3>
 		<ul class="pushes" data-bind="foreach: pushes">
 			<li class="push">
-				<a target="_blank" data-bind="attr: { href: $root.getGithubLink($data) }">
+				<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), 'data-hint': $root.getTooltipText($data) }">
 					<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
 					<span class="commit-count push-info" data-bind="text: size"></span>
 					<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
