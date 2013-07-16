@@ -1,7 +1,6 @@
 var express = require('express');
 var actions = require('./lib/actions');
 
-
 var app = express();
 app.get('/', function (req, res, next) {
 	req.url = '/index.html';
