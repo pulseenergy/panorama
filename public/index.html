@@ -113,6 +113,11 @@ var viewModel = {
 		viewModel.selectedPush(push);
 		viewModel.selectedDiff(null);
 		fetchDiff(push.repo, _.first(push.commits).sha);
+	},
+
+	getGithubLink: function (push) {
+		console.log(arguments)
+		return 'https://github.com/' + [viewModel.organization, push.repo, 'compare', push.before + '...' + push.head].join('/');
 	}
 };
 
@@ -171,6 +176,7 @@ function fetchDiff(repo, sha) {
 <div id="details-pane" data-bind="visible: selectedPush(), with: selectedPush">
 	<header>
 		<div class="details-date" data-bind="text: date"></div>
+		<a data-bind="attr: { href: $root.getGithubLink($data) }">push diff</a>
 		<div><span class="details-user" data-bind="text: user.login"></span> pushed <span class="details-size" data-bind="text: size"></span> commit(s) to <span class="details-branch" data-bind="text: branch"></span>:</div>
 	</header>
 	<ul class="details-commits" data-bind="foreach: commits">
