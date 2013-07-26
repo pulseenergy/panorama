@@ -1,6 +1,6 @@
 {
   "name": "panorama",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "review changes across multiple repositories",
   "main": "app.js",
   "scripts": {
