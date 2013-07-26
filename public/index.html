@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8"/>
+<title>panorama</title>
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="stylesheet" href="css/hint.css">
 <style>
@@ -114,16 +115,16 @@ function fetchPushes() {
 	viewModel.loading(true);
 	reqwest({
 		url: './pushes',
-  		type: 'json'
-  	}).then(function (response) {
-  		viewModel.organization(response.organization);
-  		viewModel.startDate(response.start);
-  		viewModel.endDate(response.end);
-  		viewModel.repos(response.map);
-  		viewModel.loading(false);
-  	}).fail(function (err, msg) {
-    	console.error(msg);
-  	});
+		type: 'json'
+	}).then(function (response) {
+		viewModel.organization(response.organization);
+		viewModel.startDate(response.start);
+		viewModel.endDate(response.end);
+		viewModel.repos(response.map);
+		viewModel.loading(false);
+	}).fail(function (err, msg) {
+		console.error(msg);
+	});
 }
 </script>
 </head>
