@@ -29,7 +29,7 @@ everyauth.github
 			errorDescription: _.compact([parsedUrl.query.error, parsedUrl.query.error_description]).join('; ')
 		});
 	})
-	.redirectPath('/');
+	.redirectPath('/prefs');
 
 app.set('view engine', 'ejs');
 
@@ -50,8 +50,12 @@ function checkAuth(req, res, next) {
 	}
 	next();
 }
-app.get('/pushes', checkAuth, actions.getOrgCommits);
-app.get('/diff/:repo/:sha', checkAuth, actions.getCommitDiff);
+
+app.get('/prefs', checkAuth, actions.preferences);
+
+// api
+app.get('/a/pushes', checkAuth, actions.getOrgCommits);
+app.get('/a/diff/:repo/:sha', checkAuth, actions.getCommitDiff);
 
 app.use(function handleError(err, req, res, next) {
 	console.error(err.stack);
