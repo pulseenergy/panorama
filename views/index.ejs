@@ -6,6 +6,32 @@
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="stylesheet" href="css/hint.css">
 <style>
+body {
+	position: relative;
+}
+
+.current-user {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.current-user-name {
+	position: absolute;
+	right: 45px;
+	top: 0;
+	line-height: 40px;
+	white-space: nowrap;
+}
+.current-user-avatar {
+	right: 0;
+	top: 0;
+	width: 40px;
+}
+.current-user-avatar img {
+	width: 100%;
+	border-radius: 10px 10px;
+}
+
 .app-name {
 	margin: 0;
 	letter-spacing: 4;
@@ -75,6 +101,7 @@ ul {
 [data-hint]:after {
 	white-space: pre;
 }
+
 </style>
 <script src="js/reqwest.min.js" type="text/javascript"></script>
 <script src="js/knockout.min.js" type="text/javascript"></script>
@@ -82,8 +109,9 @@ ul {
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script>
 var viewModel = {
+	loggedIn: <%= everyauth.loggedIn %>,
 	organization: ko.observable(),
-	loading: ko.observable(true),
+	loading: ko.observable(false),
 	repos: ko.observableArray(),
 	startDate: ko.observable(),
 	endDate: ko.observable(),
@@ -109,9 +137,11 @@ viewModel.endFormatted = ko.computed(function () {
 window.onload = function () {
 	fetchPushes();
 	ko.applyBindings(viewModel);
-};
-
+}
 function fetchPushes() {
+	if (!viewModel.loggedIn) {
+		return false;
+	}
 	viewModel.loading(true);
 	reqwest({
 		url: './pushes',
@@ -130,9 +160,18 @@ function fetchPushes() {
 </head>
 <body>
 <h1 class="app-name">panorama</h1>
-<h3 class="subtitle" data-bind="visible: !loading()"><span data-bind="text: organization"></span> from <span data-bind="text: startFormatted"></span> up to <span data-bind="text: endFormatted"></span></h3>
+<h3 class="subtitle" data-bind="visible: loggedIn && !loading()"><span data-bind="text: organization"></span> from <span data-bind="text: startFormatted"></span> up to <span data-bind="text: endFormatted"></span></h3>
 
 <span class="loading" data-bind="visible: loading">loading...</span>
+
+<aside class="current-user">
+<% if (everyauth.loggedIn) { %>
+	<div class="current-user-avatar"><a href="<%= user.html_url %>"><img class="user-avatar" src="<%= user.avatar_url %>"></a></div>
+	<div class="current-user-name">Hello, <strong><%= user.login %></strong></div>
+<% } else { %>
+	<p>Not logged in. <a href="auth/github">Login</a></p>
+<% } %>
+</aside>
 
 <!-- TODO: repo filter -->
 
