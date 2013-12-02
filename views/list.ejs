@@ -25,11 +25,14 @@
 		getGithubLink: function (push) {
 			return 'https://github.com/' + [viewModel.organization(), push.repo, 'compare', push.before + '...' + push.head].join('/');
 		},
-		getCommits: function (push) {
+		getPushCommits: function (push) {
 			var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
 				return '‣ ' + msg;
 			});
 			return messages.join('\n');
+		},
+		getPushTime: function (push) {
+			return moment(push.date).fromNow(true);
 		}
 	};
 
@@ -65,12 +68,13 @@
 	<div id="content">
 		<ul class="pushes" data-bind="foreach: pushes">
 			<li class="push">
+				<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
 				<div class="push-user-container">
 					<a class="push-user" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), title: user.login }">
 						<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
 					</a>
 				</div>
-				<p class="push-commits" data-bind="text: $root.getCommits($data)"></p>
+				<p class="push-commits" data-bind="text: $root.getPushCommits($data)"></p>
 			</li>
 		</ul>
 	</div>

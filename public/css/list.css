@@ -32,3 +32,9 @@
 	display: block;
 }
 
+.push-time {
+	color: #999;
+	font-size: 80%;
+	order: 1;
+}
+
