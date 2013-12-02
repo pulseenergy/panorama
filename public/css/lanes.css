@@ -1,0 +1,22 @@
+#content {
+	display: flex;
+	justify-content: center;
+	padding-top: 130px;
+	white-space: nowrap;
+}
+
+.push {
+	position: relative;
+}
+.push:hover {
+	cursor: pointer;
+}
+.push img {
+	width: 50px;
+	border-radius: 10px 10px 0 0;
+	border-bottom: 5px solid crimson;
+}
+.push a:visited img {
+	border-color: white;
+}
+
