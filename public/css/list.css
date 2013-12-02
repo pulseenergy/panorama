@@ -6,8 +6,18 @@
 #content {
 	width: 800px;
 }
+#content a:visited {
+	color: black;
+}
+
+.loading, .login-prompt {
+	text-align: center;
+}
+
 .pushes {
 	width: 100%;
+	list-style-type: none;
+	padding: 0;
 }
 .push {
 	padding: 10px;
@@ -18,18 +28,19 @@
 }
 
 .push-commits {
-	white-space: pre-line;
-	margin: 0;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 }
+.push-commits-messages {
+	margin: 0;
+	white-space: pre-line;
+}
 .push-commits-intro {
 	font-size: 80%;
+	margin-bottom: 5px;
 }
-.push-commits p {
-	margin: 0;
-}
+
 .repo-tag {
 	cursor: pointer;
 	background: #999; /* default only */

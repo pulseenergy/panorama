@@ -102,6 +102,11 @@
 
 	<div id="body">
 		<div id="content">
+			<p class="loading" data-bind="visible: loading">loading...</p>
+			<% if (!everyauth.loggedIn) { %>
+			<p class="login-prompt"><a href="auth/github">Login via GitHub</a> to view the activity that matters to you.</p>
+			<% } %>
+
 			<nav data-bind="visible: filter()">
 				<button data-bind="click: resetFilter">Clear filter</button>
 			</nav>
@@ -112,8 +117,11 @@
 						<img class="push-user" data-bind="attr: { src: user.image, alt: user.login, title: user.login }, click: $root.setFilter">
 					</div>
 					<div class="push-commits">
-						<div class="push-commits-intro"><a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a> to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter, style: { 'background-color': $root.getRepoColor(repo) }"></a></div>
-						<p data-bind="text: $root.getPushCommits($data)"></p>
+						<div class="push-commits-intro">
+							<a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a>
+							to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter, style: { 'background-color': $root.getRepoColor(repo) }"></a> <!-- ko if: branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
+						</div>
+						<p class="push-commits-messages" data-bind="text: $root.getPushCommits($data)"></p>
 					</div>
 				</li>
 			</ul>

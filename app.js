@@ -40,11 +40,15 @@ app.use(everyauth.middleware());
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
+app.get('/', renderListView);
+app.get('/list', renderListView);
+
+function renderListView(req, res) {
+	res.render('list');
+}
+
 app.get('/lanes', function (req, res) {
 	res.render('lanes');
-});
-app.get('/list', function (req, res) {
-	res.render('list');
 });
 
 function checkAuth(req, res, next) {
