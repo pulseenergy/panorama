@@ -19,10 +19,9 @@
 		loading: ko.observable(false),
 		repos: ko.observableArray(),
 		pushes: ko.observableArray(),
-		startDate: ko.observable(),
-		endDate: ko.observable(),
+		filter: ko.observable(),
 
-		getGithubLink: function (push) {
+		getGithubCompareLink: function (push) {
 			return 'https://github.com/' + [viewModel.organization(), push.repo, 'compare', push.before + '...' + push.head].join('/');
 		},
 		getPushCommits: function (push) {
@@ -33,8 +32,28 @@
 		},
 		getPushTime: function (push) {
 			return moment(push.date).fromNow(true);
+		},
+
+		resetFilter: function () {
+			viewModel.filter(null);
+		},
+		setFilter: function (data, event) {
+			if (event.target.className === 'repo-tag') {
+				viewModel.filter(function (push) { return push.repo === data.repo; });
+			} else if (event.target.className === 'push-user') {
+				console.log(data.user.login);
+				viewModel.filter(function (push) { return push.user.login === data.user.login; });
+			}
 		}
 	};
+	viewModel.filteredPushes = ko.computed(function() {
+		var filter = this.filter();
+		if (!filter) {
+			return this.pushes();
+		} else {
+			return ko.utils.arrayFilter(this.pushes(), filter);
+		}
+	}, viewModel);
 
 	window.onload = function () {
 		fetchPushes();
@@ -65,16 +84,20 @@
 
 <% include include/header %>
 
+	<nav data-bind="visible: filter()">
+		<button data-bind="click: resetFilter">Reset</button>
+	</nav>
 	<div id="content">
-		<ul class="pushes" data-bind="foreach: pushes">
+		<ul class="pushes" data-bind="foreach: filteredPushes">
 			<li class="push">
 				<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
 				<div class="push-user-container">
-					<a class="push-user" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), title: user.login }">
-						<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
-					</a>
+					<img class="push-user" data-bind="attr: { src: user.image, alt: user.login, title: user.login }, click: $root.setFilter">
 				</div>
-				<p class="push-commits" data-bind="text: $root.getPushCommits($data)"></p>
+				<div class="push-commits">
+					<div class="push-commits-intro"><a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a> to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter"></a></div>
+					<p data-bind="text: $root.getPushCommits($data)"></p>
+				</div>
 			</li>
 		</ul>
 	</div>
