@@ -1,12 +1,14 @@
-#content {
+#body {
 	display: flex;
 	justify-content: center;
 }
 
-.pushes {
+#content {
 	width: 800px;
 }
-
+.pushes {
+	width: 100%;
+}
 .push {
 	padding: 10px;
 	border-bottom: 1px solid #ddd;
@@ -30,10 +32,11 @@
 }
 .repo-tag {
 	cursor: pointer;
-	background: blue;
+	background: #999; /* default only */
 	color: white;
-	padding: 0 5px 1px;
+	padding: 0 4px 1px;
 	border-radius: 4px;
+	font-size: 90%;
 }
 
 .push-user-container {

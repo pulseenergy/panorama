@@ -13,6 +13,20 @@
 <script src="js/underscore.min.js" type="text/javascript"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script>
+	var colors = [
+		"#807c59",
+		"#618059",
+		"#73bf60",
+		"#ccae8f",
+		"#806c59",
+		"#bf9060",
+		"#65567a",
+		"#8860bf",
+		"#bfb660",
+		"#cc8f8f",
+		"#bf6060"
+	];
+
 	var viewModel = {
 		loggedIn: <%= everyauth.loggedIn %>,
 		organization: ko.observable(),
@@ -33,7 +47,10 @@
 		getPushTime: function (push) {
 			return moment(push.date).fromNow(true);
 		},
-
+		getRepoColor: function (repo) {
+			var index = _.indexOf(viewModel.repos(), repo);
+			return colors[index % colors.length];
+		},
 		resetFilter: function () {
 			viewModel.filter(null);
 		},
@@ -41,7 +58,6 @@
 			if (event.target.className === 'repo-tag') {
 				viewModel.filter(function (push) { return push.repo === data.repo; });
 			} else if (event.target.className === 'push-user') {
-				console.log(data.user.login);
 				viewModel.filter(function (push) { return push.user.login === data.user.login; });
 			}
 		}
@@ -71,7 +87,7 @@
 		}).then(function (response) {
 			viewModel.organization(response.organization);
 			viewModel.pushes(response.pushes);
-			viewModel.repos(_.keys(response.map));
+			viewModel.repos(_.pluck(response.map, 'name'));
 			viewModel.loading(false);
 		}).fail(function (err, msg) {
 			console.error(msg);
@@ -84,22 +100,24 @@
 
 <% include include/header %>
 
-	<nav data-bind="visible: filter()">
-		<button data-bind="click: resetFilter">Reset</button>
-	</nav>
-	<div id="content">
-		<ul class="pushes" data-bind="foreach: filteredPushes">
-			<li class="push">
-				<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
-				<div class="push-user-container">
-					<img class="push-user" data-bind="attr: { src: user.image, alt: user.login, title: user.login }, click: $root.setFilter">
-				</div>
-				<div class="push-commits">
-					<div class="push-commits-intro"><a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a> to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter"></a></div>
-					<p data-bind="text: $root.getPushCommits($data)"></p>
-				</div>
-			</li>
-		</ul>
+	<div id="body">
+		<div id="content">
+			<nav data-bind="visible: filter()">
+				<button data-bind="click: resetFilter">Clear filter</button>
+			</nav>
+			<ul class="pushes" data-bind="foreach: filteredPushes">
+				<li class="push">
+					<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
+					<div class="push-user-container">
+						<img class="push-user" data-bind="attr: { src: user.image, alt: user.login, title: user.login }, click: $root.setFilter">
+					</div>
+					<div class="push-commits">
+						<div class="push-commits-intro"><a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a> to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter, style: { 'background-color': $root.getRepoColor(repo) }"></a></div>
+						<p data-bind="text: $root.getPushCommits($data)"></p>
+					</div>
+				</li>
+			</ul>
+		</div>
 	</div>
 
 </div>
