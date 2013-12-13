@@ -14,8 +14,8 @@ everyauth.debug = true;
 
 everyauth.github
 	.scope('repo') // require read access to private repos
-	.appId('49822a7be3b18eb22d54')
-	.appSecret('4d28a5ca6f508d269832241cad0a4d3e6f031b5a')
+	.appId(process.env.GITHUB_APP_ID)
+	.appSecret(process.env.GITHUB_APP_SECRET)
 	.entryPath('/auth/github')
 	.callbackPath('/auth/github/callback')
 	.findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
