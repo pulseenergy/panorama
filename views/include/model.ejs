@@ -14,6 +14,7 @@ var colors = [
 ];
 
 var viewModel = {
+	view: ko.observable('list'),
 	organization: ko.observable(),
 	organizations: ko.observableArray(<%- JSON.stringify(user.organizations) %>),
 	loading: ko.observable(false),
@@ -71,10 +72,14 @@ viewModel.filteredPushes = ko.computed(function() {
 }, viewModel);
 
 window.onload = function () {
+	viewModel.view(window.location.href.replace(/.*\/([^/]+)$/, "$1"));
 	viewModel.organization(_.first(viewModel.organizations()));
 	fetchPushes();
-	ko.applyBindings(viewModel);
 	viewModel.organization.subscribe(fetchPushes);
+	viewModel.view.subscribe(function (view) {
+		window.location = './' + view;
+	});
+	ko.applyBindings(viewModel);
 };
 function fetchPushes() {
 	viewModel.loading(true);

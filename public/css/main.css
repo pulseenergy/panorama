@@ -14,15 +14,23 @@ body {
 	background-color: white;
 	z-index: 100;
 }
+.current-view {
+	position: absolute;
+	left: 10px;
+	top: 15px;
+}
 .current-user {
 	position: absolute;
 	right: 10px;
 	top: 15px;
 }
+.current-view > div,
 .current-user > div {
 	display: table-cell;
 	vertical-align: middle;
+	height: 40px;
 }
+.current-view > div + div,
 .current-user > div + div {
 	padding-left: 5px;
 }
@@ -35,6 +43,7 @@ body {
 .current-user-avatar img {
 	width: 100%;
 	border-radius: 10px 10px;
+	vertical-align: bottom;
 }
 .app-name {
 	margin: 0;
