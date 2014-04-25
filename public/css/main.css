@@ -5,13 +5,19 @@ body {
 .container {
 }
 .main-header {
+	display: flex;
+	justify-content: center;
+	border-bottom: 1px solid #ddd;
 	padding: 20px 0;
 	margin-bottom: 10px;
+	position: relative;
+	background-color: white;
+	z-index: 100;
 }
 .current-user {
 	position: absolute;
 	right: 10px;
-	top: 10px;
+	top: 15px;
 }
 .current-user > div {
 	display: table-cell;
@@ -30,23 +36,18 @@ body {
 	width: 100%;
 	border-radius: 10px 10px;
 }
-
-.main-header {
-	display: flex;
-	justify-content: center;
-	border-bottom: 1px solid #ddd;
-}
 .app-name {
 	margin: 0;
 	letter-spacing: 5px;
 	line-height: 1em;
-	margin-right: 10px;
 }
 .subtitle {
-	margin: 0;
+	margin: 0 0 0 10px;
 	line-height: 2em;
 	color: #999;
 	font-weight: normal;
 	font-size: 1em;
 }
-
+.loading, .login-prompt {
+	text-align: center;
+}

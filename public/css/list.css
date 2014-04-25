@@ -10,10 +10,6 @@
 	color: black;
 }
 
-.loading, .login-prompt {
-	text-align: center;
-}
-
 .pushes {
 	width: 100%;
 	list-style-type: none;

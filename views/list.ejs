@@ -36,7 +36,7 @@
 		filter: ko.observable(),
 
 		getGithubCompareLink: function (push) {
-			return 'https://github.com/' + [viewModel.organization(), push.repo, 'compare', push.before + '...' + push.head].join('/');
+			return 'https://github.com/' + [push.repo.name, 'compare', push.before + '...' + push.head].join('/');
 		},
 		getPushCommits: function (push) {
 			var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
@@ -47,16 +47,22 @@
 		getPushTime: function (push) {
 			return moment(push.date).fromNow(true);
 		},
-		getRepoColor: function (repo) {
-			var index = _.indexOf(viewModel.repos(), repo);
-			return colors[index % colors.length];
+		getPushTooltip: function (push) {
+			return this.getPushTime(push) + '\n' + this.getPushCommits(push);
+		},
+		getSimpleRepoName: function (name) {
+			var organization = this.organization();
+			if (organization && name && name.indexOf(organization.login + '/') === 0) {
+				return name.substr(organization.login.length + 1);
+			}
+			return name;
 		},
 		resetFilter: function () {
 			viewModel.filter(null);
 		},
 		setFilter: function (data, event) {
 			if (event.target.className === 'repo-tag') {
-				viewModel.filter(function (push) { return push.repo === data.repo; });
+				viewModel.filter(function (push) { return push.repo.name === data.repo.name; });
 			} else if (event.target.className === 'push-user') {
 				viewModel.filter(function (push) { return push.user.login === data.user.login; });
 			}
@@ -81,13 +87,31 @@
 		viewModel.loading(true);
 
 		var org = viewModel.organization();
-		var url = org == null ? './a/user/pushes' : './a/organization/' + org + '/pushes';
+		var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
 		reqwest({
 			url: url,
 			type: 'json'
 		}).then(function (response) {
-			viewModel.pushes(response.pushes);
-			viewModel.repos(_.pluck(response.map, 'name'));
+			var index = 0;
+			var pushes = response.pushes;
+			var repos = _.sortBy(_.map(_.groupBy(pushes, function (push) {
+				return push.repo;
+			}), function (pushes, repo) {
+				return {
+					name: repo,
+					pushes: pushes,
+					color: colors[index++ % colors.length]
+				};
+			}), function (repo) {
+				return repo.name;
+			});
+			_.each(repos, function (repo) {
+				_.each(repo.pushes, function (push) {
+					push.repo = repo;
+				});
+			});
+			viewModel.repos(repos);
+			viewModel.pushes(pushes);
 			viewModel.loading(false);
 		}).fail(function (err, msg) {
 			console.error(msg);
@@ -116,7 +140,7 @@
 					<div class="push-commits">
 						<div class="push-commits-intro">
 							<a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a>
-							to <a class="repo-tag" data-bind="text: repo, click: $root.setFilter, style: { 'background-color': $root.getRepoColor(repo) }"></a> <!-- ko if: branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
+							to <a class="repo-tag" data-bind="text: $root.getSimpleRepoName(repo.name), click: $root.setFilter, style: { 'background-color': repo.color }"></a> <!-- ko if: branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
 						</div>
 						<p class="push-commits-messages" data-bind="text: $root.getPushCommits($data)"></p>
 					</div>

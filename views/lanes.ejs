@@ -21,15 +21,27 @@ var viewModel = {
 	startDate: ko.observable(),
 	endDate: ko.observable(),
 
-	getGithubLink: function (push) {
-		return 'https://github.com/' + [viewModel.organization(), push.repo, 'compare', push.before + '...' + push.head].join('/');
+	getGithubCompareLink: function (push) {
+		return 'https://github.com/' + [push.repo, 'compare', push.before + '...' + push.head].join('/');
 	},
-	getTooltipText: function (push) {
-		var text = [moment(push.date).fromNow()];
+	getPushCommits: function (push) {
 		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
 			return '‣ ' + msg;
 		});
-		return text.concat(messages).join('\n');
+		return messages.join('\n');
+	},
+	getPushTime: function (push) {
+		return moment(push.date).fromNow(true);
+	},
+	getPushTooltip: function (push) {
+		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
+	},
+	getSimpleRepoName: function (name) {
+		var organization = this.organization();
+		if (organization && name.indexOf(organization.login + '/') === 0) {
+			return name.substr(organization.login.length + 1);
+		}
+		return name;
 	}
 };
 viewModel.startFormatted = ko.computed(function () {
@@ -56,7 +68,17 @@ function fetchPushes() {
 	}).then(function (response) {
 		viewModel.startDate(response.start);
 		viewModel.endDate(response.end);
-		viewModel.repos(response.map);
+		var repos = _.sortBy(_.map(_.groupBy(response.pushes, function (push) {
+			return push.repo;
+		}), function (pushes, repo) {
+			return {
+				name: repo,
+				pushes: pushes
+			};
+		}), function (repo) {
+			return repo.name;
+		});
+		viewModel.repos(repos);
 		viewModel.loading(false);
 	}).fail(function (err, msg) {
 		console.error(msg);
@@ -72,10 +94,10 @@ function fetchPushes() {
 	<div id="body">
 		<div id="content" data-bind="foreach: repos">
 			<div class="repo">
-				<h3 class="repo-name" data-bind="text: name"></h3>
+				<h3 class="repo-name" data-bind="text: $root.getSimpleRepoName(name)"></h3>
 				<ul class="pushes" data-bind="foreach: pushes">
 					<li class="push">
-						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), 'data-hint': $root.getTooltipText($data) }">
+						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
 							<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
 							<span class="commit-count push-info" data-bind="text: size"></span>
 							<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
