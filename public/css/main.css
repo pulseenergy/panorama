@@ -13,16 +13,17 @@ body {
 	right: 10px;
 	top: 10px;
 }
+.current-user > div {
+	display: table-cell;
+	vertical-align: middle;
+}
+.current-user > div + div {
+	padding-left: 5px;
+}
 .current-user-name {
-	position: absolute;
-	right: 45px;
-	top: 5px;
-	line-height: 40px;
 	white-space: nowrap;
 }
 .current-user-avatar {
-	right: 0;
-	top: 0;
 	width: 40px;
 }
 .current-user-avatar img {

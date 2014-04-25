@@ -72,8 +72,10 @@
 	}, viewModel);
 
 	window.onload = function () {
+		viewModel.organization(_.first(viewModel.organizations()));
 		fetchPushes();
 		ko.applyBindings(viewModel);
+		viewModel.organization.subscribe(fetchPushes);
 	};
 	function fetchPushes() {
 		viewModel.loading(true);

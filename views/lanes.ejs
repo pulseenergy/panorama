@@ -40,6 +40,7 @@ viewModel.endFormatted = ko.computed(function () {
 });
 
 window.onload = function () {
+	viewModel.organization(_.first(viewModel.organizations()));
 	fetchPushes();
 	ko.applyBindings(viewModel);
 	viewModel.organization.subscribe(fetchPushes);
