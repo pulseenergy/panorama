@@ -140,7 +140,7 @@
 					<div class="push-commits">
 						<div class="push-commits-intro">
 							<a target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data) }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a>
-							to <a class="repo-tag" data-bind="text: $root.getSimpleRepoName(repo.name), click: $root.setFilter, style: { 'background-color': repo.color }"></a> <!-- ko if: branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
+							to <a class="repo-tag" data-bind="text: $root.getSimpleRepoName(repo.name), click: $root.setFilter, style: { 'backgroundColor': repo.color }"></a> <!-- ko if: branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
 						</div>
 						<p class="push-commits-messages" data-bind="text: $root.getPushCommits($data)"></p>
 					</div>
