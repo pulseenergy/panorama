@@ -1,0 +1,124 @@
+<script>
+var colors = [
+	"#807c59",
+	"#618059",
+	"#73bf60",
+	"#ccae8f",
+	"#806c59",
+	"#bf9060",
+	"#65567a",
+	"#8860bf",
+	"#bfb660",
+	"#cc8f8f",
+	"#bf6060"
+];
+
+var viewModel = {
+	organization: ko.observable(),
+	organizations: ko.observableArray(<%- JSON.stringify(user.organizations) %>),
+	loading: ko.observable(false),
+	repos: ko.observableArray(),
+	pushes: ko.observableArray(),
+	startDate: ko.observable(),
+	endDate: ko.observable(),
+	filter: ko.observable(),
+
+	getGithubCompareLink: function (push) {
+		return 'https://github.com/' + [push.repo.name, 'compare', push.before + '...' + push.head].join('/');
+	},
+	getPushCommits: function (push) {
+		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
+			return '‣ ' + msg;
+		});
+		return messages.join('\n');
+	},
+	getPushTime: function (push) {
+		return moment(push.date).fromNow(true);
+	},
+	getPushTooltip: function (push) {
+		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
+	},
+	getSimpleRepoName: function (name) {
+		var organization = this.organization();
+		if (organization && name && name.indexOf(organization.login + '/') === 0) {
+			return name.substr(organization.login.length + 1);
+		}
+		return name;
+	},
+	setFilter: function (data, event) {
+		if (event.target.className === 'repo-tag') {
+			viewModel.filter(function (push) { return push.repo.name === data.repo.name; });
+		} else if (event.target.className === 'push-user') {
+			viewModel.filter(function (push) { return push.user.login === data.user.login; });
+		} else {
+			viewModel.filter(null);
+		}
+	}
+};
+viewModel.startFormatted = ko.computed(function () {
+	return moment(viewModel.startDate()).fromNow();
+});
+viewModel.endFormatted = ko.computed(function () {
+	return moment(viewModel.endDate()).fromNow();
+});
+viewModel.filteredPushes = ko.computed(function() {
+	var filter = this.filter();
+	if (!filter) {
+		return this.pushes();
+	} else {
+		return ko.utils.arrayFilter(this.pushes(), filter);
+	}
+}, viewModel);
+
+window.onload = function () {
+	viewModel.organization(_.first(viewModel.organizations()));
+	fetchPushes();
+	ko.applyBindings(viewModel);
+	viewModel.organization.subscribe(fetchPushes);
+};
+function fetchPushes() {
+	viewModel.loading(true);
+
+	var org = viewModel.organization();
+	var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
+
+	function simpleName(name) {
+		if (org && name.indexOf(org.login) === 0) {
+			return name.substr(org.login.length + 1);
+		}
+		return name;
+	}
+
+	reqwest({
+		url: url,
+		type: 'json'
+	}).then(function (response) {
+		var index = 0;
+		var pushes = response.pushes;
+		var repos = _.sortBy(_.map(_.groupBy(pushes, function (push) {
+			return push.repo;
+		}), function (pushes, repo) {
+			return {
+				name: repo,
+				simpleName: simpleName(repo),
+				pushes: pushes,
+				color: colors[index++ % colors.length]
+			};
+		}), function (repo) {
+			return repo.name;
+		});
+		_.each(repos, function (repo) {
+			_.each(repo.pushes, function (push) {
+				push.repo = repo;
+			});
+		});
+		viewModel.startDate(response.start);
+		viewModel.endDate(response.end);
+		viewModel.repos(repos);
+		viewModel.pushes(pushes);
+		viewModel.loading(false);
+	}).fail(function (err, msg) {
+		console.error(msg);
+	});
+}
+</script>

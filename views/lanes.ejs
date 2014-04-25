@@ -12,89 +12,17 @@
 <script src="js/knockout.min.js" type="text/javascript"></script>
 <script src="js/underscore.min.js" type="text/javascript"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
-<script>
-var viewModel = {
-	organization: ko.observable(),
-	organizations: ko.observableArray(<%- JSON.stringify(user.organizations) %>),
-	loading: ko.observable(false),
-	repos: ko.observableArray(),
-	startDate: ko.observable(),
-	endDate: ko.observable(),
-
-	getGithubCompareLink: function (push) {
-		return 'https://github.com/' + [push.repo, 'compare', push.before + '...' + push.head].join('/');
-	},
-	getPushCommits: function (push) {
-		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
-			return '‣ ' + msg;
-		});
-		return messages.join('\n');
-	},
-	getPushTime: function (push) {
-		return moment(push.date).fromNow(true);
-	},
-	getPushTooltip: function (push) {
-		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
-	},
-	getSimpleRepoName: function (name) {
-		var organization = this.organization();
-		if (organization && name.indexOf(organization.login + '/') === 0) {
-			return name.substr(organization.login.length + 1);
-		}
-		return name;
-	}
-};
-viewModel.startFormatted = ko.computed(function () {
-	return moment(viewModel.startDate()).fromNow();
-});
-viewModel.endFormatted = ko.computed(function () {
-	return moment(viewModel.endDate()).fromNow();
-});
-
-window.onload = function () {
-	viewModel.organization(_.first(viewModel.organizations()));
-	fetchPushes();
-	ko.applyBindings(viewModel);
-	viewModel.organization.subscribe(fetchPushes);
-};
-function fetchPushes() {
-	viewModel.loading(true);
-
-	var org = viewModel.organization();
-	var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
-	reqwest({
-		url: url,
-		type: 'json'
-	}).then(function (response) {
-		viewModel.startDate(response.start);
-		viewModel.endDate(response.end);
-		var repos = _.sortBy(_.map(_.groupBy(response.pushes, function (push) {
-			return push.repo;
-		}), function (pushes, repo) {
-			return {
-				name: repo,
-				pushes: pushes
-			};
-		}), function (repo) {
-			return repo.name;
-		});
-		viewModel.repos(repos);
-		viewModel.loading(false);
-	}).fail(function (err, msg) {
-		console.error(msg);
-	});
-}
-</script>
+<% include include/model %>
 </head>
 <body>
 <div class="container">
 
-<% include include/header %>
+	<% include include/header %>
 
 	<div id="body">
 		<div id="content" data-bind="foreach: repos">
 			<div class="repo">
-				<h3 class="repo-name" data-bind="text: $root.getSimpleRepoName(name)"></h3>
+				<h3 class="repo-name" data-bind="text: simpleName"></h3>
 				<ul class="pushes" data-bind="foreach: pushes">
 					<li class="push">
 						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
