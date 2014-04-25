@@ -84,36 +84,51 @@ if (process.env.GITHUB_API_TOKEN) {
 				errorDescription: _.compact([parsedUrl.query.error, parsedUrl.query.error_description]).join('; ')
 			});
 		})
-		.redirectPath('/prefs');
+		.redirectPath('/');
 	app.use(everyauth.middleware());
 }
 
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', renderListView);
-app.get('/list', renderListView);
-
-function renderListView(req, res) {
-	res.render('list');
-}
-
-app.get('/lanes', function (req, res) {
-	res.render('lanes');
+app.get('/', function (req, res) {
+	if (!req.user) {
+		res.render('login');
+	} else {
+		res.redirect('/list');
+	}
 });
 
-function checkAuth(req, res, next) {
+function checkAuthLogin(req, res, next) {
+	if (!req.user) {
+		return res.redirect('/')
+	}
+	if (!req.user.organizations) {
+		return request(githubApi.organizations(req.user, req.session.authToken), function (err, response, body) {
+			req.user.organizations = JSON.parse(body);
+			next();
+		});
+	}
+	next();
+}
+
+function checkAuth401(req, res, next) {
 	if (!req.user) {
 		return res.send(401);
 	}
 	next();
 }
 
-app.get('/prefs', checkAuth, actions.preferences);
+app.get('/list', checkAuthLogin, function (req, res) {
+	res.render('list');
+});
+app.get('/lanes', checkAuthLogin, function (req, res) {
+	res.render('lanes');
+});
 
 // api
-app.get('/a/pushes', checkAuth, actions.getOrgCommits);
-app.get('/a/diff/:repo/:sha', checkAuth, actions.getCommitDiff);
+app.get('/a/organization/:organization/pushes', checkAuth401, actions.getOrgCommits);
+app.get('/a/user/pushes', checkAuth401, actions.getUserCommits);
 
 app.use(function handleError(err, req, res, next) {
 	console.error(err.stack);

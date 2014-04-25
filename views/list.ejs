@@ -28,8 +28,8 @@
 	];
 
 	var viewModel = {
-		loggedIn: <%= everyauth.loggedIn %>,
 		organization: ko.observable(),
+		organizations: ko.observableArray(<%- JSON.stringify(user.organizations) %>),
 		loading: ko.observable(false),
 		repos: ko.observableArray(),
 		pushes: ko.observableArray(),
@@ -76,16 +76,14 @@
 		ko.applyBindings(viewModel);
 	};
 	function fetchPushes() {
-		if (!viewModel.loggedIn) {
-			return false;
-		}
-
 		viewModel.loading(true);
+
+		var org = viewModel.organization();
+		var url = org == null ? './a/user/pushes' : './a/organization/' + org + '/pushes';
 		reqwest({
-			url: './a/pushes',
+			url: url,
 			type: 'json'
 		}).then(function (response) {
-			viewModel.organization(response.organization);
 			viewModel.pushes(response.pushes);
 			viewModel.repos(_.pluck(response.map, 'name'));
 			viewModel.loading(false);
@@ -103,9 +101,6 @@
 	<div id="body">
 		<div id="content">
 			<p class="loading" data-bind="visible: loading">loading...</p>
-			<% if (!everyauth.loggedIn) { %>
-			<p class="login-prompt"><a href="auth/github">Login via GitHub</a> to view the activity that matters to you.</p>
-			<% } %>
 
 			<nav data-bind="visible: filter()">
 				<button data-bind="click: resetFilter">Clear filter</button>

@@ -14,8 +14,8 @@
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script>
 var viewModel = {
-	loggedIn: <%= everyauth.loggedIn %>,
 	organization: ko.observable(),
+	organizations: ko.observableArray(<%- JSON.stringify(user.organizations) %>),
 	loading: ko.observable(false),
 	repos: ko.observableArray(),
 	startDate: ko.observable(),
@@ -42,18 +42,17 @@ viewModel.endFormatted = ko.computed(function () {
 window.onload = function () {
 	fetchPushes();
 	ko.applyBindings(viewModel);
+	viewModel.organization.subscribe(fetchPushes);
 };
 function fetchPushes() {
-	if (!viewModel.loggedIn) {
-		return false;
-	}
-
 	viewModel.loading(true);
+
+	var org = viewModel.organization();
+	var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
 	reqwest({
-		url: './a/pushes',
+		url: url,
 		type: 'json'
 	}).then(function (response) {
-		viewModel.organization(response.organization);
 		viewModel.startDate(response.start);
 		viewModel.endDate(response.end);
 		viewModel.repos(response.map);
@@ -69,20 +68,22 @@ function fetchPushes() {
 
 <% include include/header %>
 
-<div id="content" data-bind="foreach: repos">
-	<div class="repo">
-		<h3 class="repo-name" data-bind="text: name"></h3>
-		<ul class="pushes" data-bind="foreach: pushes">
-			<li class="push">
-				<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), 'data-hint': $root.getTooltipText($data) }">
-					<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
-					<span class="commit-count push-info" data-bind="text: size"></span>
-					<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
-				</a>
-			</li>
-		</ul>
+	<div id="body">
+		<div id="content" data-bind="foreach: repos">
+			<div class="repo">
+				<h3 class="repo-name" data-bind="text: name"></h3>
+				<ul class="pushes" data-bind="foreach: pushes">
+					<li class="push">
+						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubLink($data), 'data-hint': $root.getTooltipText($data) }">
+							<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
+							<span class="commit-count push-info" data-bind="text: size"></span>
+							<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
-</div>
 
 </div>
 </body>
