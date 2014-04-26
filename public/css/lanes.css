@@ -6,7 +6,10 @@
 }
 
 .push {
-	position: relative;
+
+}
+.push + .push {
+	margin-top: 5px;
 }
 .push:hover {
 	cursor: pointer;
@@ -15,19 +18,16 @@
 	width: 50px;
 	border-radius: 10px 10px 0 0;
 	border-bottom: 5px solid crimson;
+	vertical-align: bottom;
 }
 .push a:visited img {
 	border-color: white;
 }
 
-ul {
-	display: inline-block;
-}
-
 .repo {
 	display: inline-block;
 	vertical-align: top;
-	padding: 0 5px;
+	padding: 0;
 }
 .repo-name {
 	-webkit-transform: rotate(-90deg);
@@ -35,13 +35,47 @@ ul {
 	transform: rotate(-90deg);
 	transform-origin: 25px 50%;
 	margin: 0;
-	padding-left: 20px;
+	padding-left: 25px;
 	width: 0;
 	white-space: nowrap;
 }
 .pushes {
 	list-style-type: none;
-	padding: 0;
+	padding: 5px;
+	margin: 0;
+}
+.pushes.bucket-0 {
+	background-color: #807c59;
+}
+.pushes.bucket-1 {
+	background-color: #618059;
+}
+.pushes.bucket-2 {
+	background-color: #73bf60;
+}
+.pushes.bucket-3 {
+	background-color: #ccae8f;
+}
+.pushes.bucket-4 {
+	background-color: #806c59;
+}
+.pushes.bucket-5 {
+	background-color: #bf9060;
+}
+.pushes.bucket-6 {
+	background-color: #65567a;
+}
+.pushes.bucket-7 {
+	background-color: #8860bf;
+}
+.pushes.bucket-8 {
+	background-color: #bfb660;
+}
+.pushes.bucket-9 {
+	background-color: #cc8f8f;
+}
+.pushes.bucket-10 {
+	background-color: #bf6060;
 }
 .push-info {
 	position: absolute;

@@ -54,6 +54,24 @@ var viewModel = {
 		} else {
 			viewModel.filter(null);
 		}
+	},
+	bucketize: function (pushes) {
+		var max = _.last(this.pushes());
+		max = max ? max.bucket : 0;
+
+		var result = [];
+		while (result.length <= max) {
+			result.push({
+				bucket: result.length,
+				bucketClass: 'bucket-' + result.length % 11,
+				pushes: []
+			});
+		}
+
+		pushes.forEach(function (push) {
+			result[push.bucket].pushes.push(push);
+		});
+		return result;
 	}
 };
 viewModel.startFormatted = ko.computed(function () {
@@ -94,12 +112,39 @@ function fetchPushes() {
 		return name;
 	}
 
+	var bucketEnd;
+	var bucketIndex = 0;
+	var bucketSizeIndex = 0;
+	var bucketSize = [{ minutes: 15 }, { hours: 1 }, { hours: 4 }];
+	function bucketer(date) {
+		if (bucketEnd == null) {
+			bucketEnd = moment(date).clone().startOf('minute');
+			bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes()));
+			bucketEnd.subtract(bucketSize[0]);
+		}
+		if (bucketEnd.isBefore(date)) {
+			return bucketIndex;
+		}
+		while (true) {
+			bucketSizeIndex++;
+			bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 8)] || { days: 1 })
+			if (bucketEnd.isBefore(date)) {
+				return bucketIndex++;
+			}
+		}
+	}
+
 	reqwest({
 		url: url,
 		type: 'json'
 	}).then(function (response) {
-		var index = 0;
+
 		var pushes = response.pushes;
+		_.each(pushes, function (push) {
+			push.bucket = bucketer(push.date);
+		});
+
+		var index = 0;
 		var repos = _.sortBy(_.map(_.groupBy(pushes, function (push) {
 			return push.repo;
 		}), function (pushes, repo) {
@@ -119,8 +164,8 @@ function fetchPushes() {
 		});
 		viewModel.startDate(response.start);
 		viewModel.endDate(response.end);
-		viewModel.repos(repos);
 		viewModel.pushes(pushes);
+		viewModel.repos(repos);
 		viewModel.loading(false);
 	}).fail(function (err, msg) {
 		console.error(msg);

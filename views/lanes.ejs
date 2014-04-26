@@ -23,7 +23,8 @@
 		<div id="content" data-bind="foreach: repos">
 			<div class="repo">
 				<h3 class="repo-name" data-bind="text: simpleName"></h3>
-				<ul class="pushes" data-bind="foreach: pushes">
+				<!-- ko foreach: $root.bucketize(pushes) -->
+				<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 					<li class="push">
 						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
 							<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
@@ -32,6 +33,7 @@
 						</a>
 					</li>
 				</ul>
+				<!-- /ko -->
 			</div>
 		</div>
 	</div>
