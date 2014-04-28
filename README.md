@@ -2,7 +2,7 @@
 
 GitHub client for viewing all the things (you care about).
 
-[See it in action](http://mypanorama.herokuapp.com)
+[See it in action](http://panorama.pulseenergy.com)
 
 ## Development
 
