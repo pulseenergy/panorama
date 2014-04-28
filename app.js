@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
 
 function checkAuthLogin(req, res, next) {
 	if (!req.user) {
-		return res.redirect('/')
+		return res.redirect('/');
 	}
 	if (!req.user.organizations) {
 		return request(githubApi.organizations(req.user, req.session.authToken), function (err, response, body) {
