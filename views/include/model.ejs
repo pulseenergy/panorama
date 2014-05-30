@@ -63,7 +63,7 @@ var viewModel = {
 		while (result.length <= max) {
 			result.push({
 				bucket: result.length,
-				bucketClass: 'bucket-' + result.length % 11,
+				bucketClass: 'bucket-' + result.length + ' bucket-color-' + result.length % 11,
 				pushes: []
 			});
 		}
@@ -72,7 +72,46 @@ var viewModel = {
 			result[push.bucket].pushes.push(push);
 		});
 		return result;
-	}
+	},
+	adjustAllLanes: _.debounce(function () {
+		var adjusts = 0;
+
+		function bump(node, amount) {
+			var previous = parseInt(node.style.marginTop, 10) || 0;
+			node.style.marginTop = previous + amount + "px";
+		}
+
+		for (var bucket = 0; ; bucket++) {
+			var row = document.querySelectorAll('.pushes.bucket-' + bucket)
+			if (!row.length) break;
+
+			for (var c = 0; c < row.length; c++) {
+				if (adjusts++ > 5000) return; // safety
+
+				var current = row[c];
+				var previous = row[c - 1];
+
+				if (previous) {
+					var pt = previous.offsetTop;
+					var pb = pt + previous.offsetHeight;
+
+					var ct = current.offsetTop;
+					var cb = ct + current.offsetHeight;
+
+					if (ct > pb) {
+						// bump previous, recursively
+//						console.log('bump (previous)', previous);
+						bump(previous, ct - pb + 5);
+						c -= 2;
+					} else if (cb < pt) {
+						// bump current, no recursion
+//						console.log('bump (current)', current);
+						bump(current, pt - cb + 5);
+					}
+				}
+			}
+		}
+	}, 100)
 };
 viewModel.startFormatted = ko.computed(function () {
 	return moment(viewModel.startDate()).fromNow();
