@@ -98,15 +98,16 @@ var viewModel = {
 					var ct = current.offsetTop;
 					var cb = ct + current.offsetHeight;
 
-					if (ct > pb) {
+					var overlap = 5;
+					if (ct > (pb - overlap)) {
 						// bump previous, recursively
 //						console.log('bump (previous)', previous);
-						bump(previous, ct - pb + 5);
+						bump(previous, ct - pb + overlap);
 						c -= 2;
-					} else if (cb < pt) {
+					} else if (cb < (pt + overlap)) {
 						// bump current, no recursion
 //						console.log('bump (current)', current);
-						bump(current, pt - cb + 5);
+						bump(current, pt - cb + overlap);
 					}
 				}
 			}
@@ -166,7 +167,7 @@ function fetchPushes() {
 		}
 		while (true) {
 			bucketSizeIndex++;
-			bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 8)] || { days: 1 })
+			bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 })
 			if (bucketEnd.isBefore(date)) {
 				return bucketIndex++;
 			}
