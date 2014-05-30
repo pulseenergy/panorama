@@ -1,8 +1,21 @@
 #content {
 	display: flex;
 	justify-content: center;
-	padding-top: 130px;
 	white-space: nowrap;
+}
+
+.lane-wrapper {
+	padding-top: 130px;
+	position: relative;
+}
+
+#underlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: -10;
 }
 
 .push {
@@ -16,7 +29,7 @@
 }
 .push img {
 	width: 50px;
-	border-radius: 10px 10px 0 0;
+	border-radius: 5px 5px 0 0;
 	border-bottom: 5px solid crimson;
 	vertical-align: bottom;
 }
@@ -43,6 +56,10 @@
 	list-style-type: none;
 	padding: 5px;
 	margin: 0;
+	border-radius: 5px;
+}
+.pushes.empty {
+	background: none !important;
 }
 .pushes.bucket-color-0 {
 	background-color: #807c59;

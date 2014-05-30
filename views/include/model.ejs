@@ -63,7 +63,7 @@ var viewModel = {
 		while (result.length <= max) {
 			result.push({
 				bucket: result.length,
-				bucketClass: 'bucket-' + result.length + ' bucket-color-' + result.length % 11,
+				bucketClass: 'bucket-' + result.length + ' bucket-color-' + result.length % colors.length,
 				pushes: []
 			});
 		}
@@ -71,22 +71,35 @@ var viewModel = {
 		pushes.forEach(function (push) {
 			result[push.bucket].pushes.push(push);
 		});
+		result.forEach(function (bucket) {
+			if (bucket.pushes.length === 0) {
+				bucket.bucketClass += ' empty';
+			}
+		});
 		return result;
 	},
 	adjustAllLanes: _.debounce(function () {
 		var adjusts = 0;
+		var overlap = 5;
 
 		function bump(node, amount) {
 			var previous = parseInt(node.style.marginTop, 10) || 0;
 			node.style.marginTop = previous + amount + "px";
 		}
 
+		underlay.clear();
+
 		for (var bucket = 0; ; bucket++) {
+
+			// TODO do all the math in memory, then dump it into the DOM when finished
 			var row = document.querySelectorAll('.pushes.bucket-' + bucket)
 			if (!row.length) break;
 
 			for (var c = 0; c < row.length; c++) {
-				if (adjusts++ > 5000) return; // safety
+				if (adjusts++ > 5000) {
+					console.log('too many layout iterations, aborting');
+					return;
+				}
 
 				var current = row[c];
 				var previous = row[c - 1];
@@ -98,7 +111,6 @@ var viewModel = {
 					var ct = current.offsetTop;
 					var cb = ct + current.offsetHeight;
 
-					var overlap = 5;
 					if (ct > (pb - overlap)) {
 						// bump previous, recursively
 //						console.log('bump (previous)', previous);
@@ -111,6 +123,58 @@ var viewModel = {
 					}
 				}
 			}
+
+			var els = _.map(row, function (e) {
+				var overlap = 0;
+				var xmin = e.offsetLeft + overlap;
+				var xmax = e.offsetLeft + e.offsetWidth - overlap;
+				var xbar = e.offsetLeft + e.offsetWidth / 2;
+				var ymin = e.offsetTop + overlap;
+				var ymax = e.offsetTop + e.offsetHeight - overlap;
+				var ybar = e.offsetTop + e.offsetHeight / 2;
+				return { xmin: xmin, xmax: xmax, xbar: xbar, ymin: ymin, ymax: ymax, ybar: ybar };
+			});
+
+			function smooth(els, y1, y2) {
+				var tops = [];
+				for (var i = 0; i < els.length; i++) {
+					var e = els[i];
+					var ne = els[i + 1];
+					if (i == 0) {
+						if (y2) {
+							tops.push('M' + e.xbar + ',' + e[y1]);
+						} else {
+							tops.push('M' + e.xmin + ',' + e[y1]);
+							tops.push('L' + e.xbar + ',' + e[y1]);
+						}
+					}
+					if (ne) {
+						tops.push('C' + e.xmax + ',' + e[y1] + ' ' + ne.xmin + ',' + ne[y1] + ' ' + ne.xbar + ',' + ne[y1]);
+					} else {
+						if (y2) {
+							tops.push('C' + e.xmax + ',' + e[y1] + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
+						} else {
+							tops.push('L' + e.xmax + ',' + e[y1]);
+						}
+					}
+				}
+				if (y2) {
+					for (var i = els.length - 1; i >= 0; i--) {
+						var e = els[i];
+						var ne = els[i - 1];
+						if (ne) {
+							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
+						} else {
+							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
+						}
+					}
+				}
+				return tops.join(' ');
+			}
+
+
+			underlay.path(smooth(els, 'ymin', 'ymax')).fill(colors[bucket % colors.length])
+//			underlay.path(smooth(els, 'ymax')).fill('none').stroke({ width: '2px', color: colors[bucket % colors.length]})
 		}
 	}, 100)
 };
@@ -129,7 +193,13 @@ viewModel.filteredPushes = ko.computed(function() {
 	}
 }, viewModel);
 
+var underlay;
 window.onload = function () {
+	underlay = document.getElementById('underlay');
+	if (underlay) {
+		underlay = SVG(underlay);
+	}
+
 	viewModel.view(window.location.href.replace(/.*\/([^/]+)$/, "$1"));
 	viewModel.organization(_.first(viewModel.organizations()));
 	fetchPushes();

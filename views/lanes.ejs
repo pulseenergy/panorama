@@ -12,6 +12,7 @@
 <script src="js/knockout.min.js" type="text/javascript"></script>
 <script src="js/underscore.min.js" type="text/javascript"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
+<script src="js/svg.min.js" type="text/javascript"></script>
 <% include include/model %>
 </head>
 <body>
@@ -20,20 +21,25 @@
 	<% include include/header %>
 
 	<div id="body">
-		<div id="content" data-bind="foreach: repos">
-			<div class="repo">
-				<h3 class="repo-name" data-bind="text: simpleName"></h3>
-				<!-- ko foreach: { data: $root.bucketize(pushes), afterRender: $root.adjustAllLanes } -->
-				<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
-					<li class="push">
-						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
-							<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
-							<span class="commit-count push-info" data-bind="text: size"></span>
-							<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
-						</a>
-					</li>
-				</ul>
+		<div id="content">
+			<div class="lane-wrapper">
+				<!-- ko foreach: repos -->
+				<div class="repo">
+					<h3 class="repo-name" data-bind="text: simpleName"></h3>
+					<!-- ko foreach: { data: $root.bucketize(pushes), afterRender: $root.adjustAllLanes } -->
+					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
+						<li class="push">
+							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
+								<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
+								<span class="commit-count push-info" data-bind="text: size"></span>
+								<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
+							</a>
+						</li>
+					</ul>
+					<!-- /ko -->
+				</div>
 				<!-- /ko -->
+				<div id="underlay"></div>
 			</div>
 		</div>
 	</div>
