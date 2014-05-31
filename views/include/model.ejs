@@ -80,7 +80,7 @@ var viewModel = {
 	},
 	adjustAllLanes: _.debounce(function () {
 		var adjusts = 0;
-		var overlap = 5;
+		var overlap = 0;
 
 		function bump(node, amount) {
 			var previous = parseInt(node.style.marginTop, 10) || 0;
@@ -125,12 +125,12 @@ var viewModel = {
 			}
 
 			var els = _.map(row, function (e) {
-				var overlap = 0;
-				var xmin = e.offsetLeft + overlap;
-				var xmax = e.offsetLeft + e.offsetWidth - overlap;
+				var inset = 0;
+				var xmin = e.offsetLeft + inset;
+				var xmax = e.offsetLeft + e.offsetWidth - inset;
 				var xbar = e.offsetLeft + e.offsetWidth / 2;
-				var ymin = e.offsetTop + overlap;
-				var ymax = e.offsetTop + e.offsetHeight - overlap;
+				var ymin = e.offsetTop + inset;
+				var ymax = e.offsetTop + e.offsetHeight - inset;
 				var ybar = e.offsetTop + e.offsetHeight / 2;
 				return { xmin: xmin, xmax: xmax, xbar: xbar, ymin: ymin, ymax: ymax, ybar: ybar };
 			});

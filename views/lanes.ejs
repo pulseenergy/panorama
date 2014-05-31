@@ -23,8 +23,7 @@
 	<div id="body">
 		<div id="content">
 			<div class="lane-wrapper">
-				<!-- ko foreach: repos -->
-				<div class="repo">
+				<!-- ko foreach: repos --><div class="repo">
 					<h3 class="repo-name" data-bind="text: simpleName"></h3>
 					<!-- ko foreach: { data: $root.bucketize(pushes), afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
@@ -37,8 +36,7 @@
 						</li>
 					</ul>
 					<!-- /ko -->
-				</div>
-				<!-- /ko -->
+				</div><!-- /ko -->
 				<div id="underlay"></div>
 			</div>
 		</div>

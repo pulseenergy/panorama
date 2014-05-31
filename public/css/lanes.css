@@ -5,7 +5,6 @@
 }
 
 .lane-wrapper {
-	padding-top: 130px;
 	position: relative;
 }
 
@@ -29,7 +28,7 @@
 }
 .push img {
 	width: 50px;
-	border-radius: 5px 5px 0 0;
+	border-radius: 10px 10px 0 0;
 	border-bottom: 5px solid crimson;
 	vertical-align: bottom;
 }
@@ -40,15 +39,19 @@
 .repo {
 	display: inline-block;
 	vertical-align: top;
-	padding: 0;
+	padding: 0 0 50px 0;
+	height: 100%;
+}
+.repo:nth-child(even) {
+	background-color: rgba(0,0,0,0.075);
 }
 .repo-name {
 	-webkit-transform: rotate(-90deg);
 	-webkit-transform-origin: 25px 50%;
 	transform: rotate(-90deg);
 	transform-origin: 25px 50%;
-	margin: 0;
 	padding-left: 25px;
+	margin: 150px 0 0;
 	width: 0;
 	white-space: nowrap;
 }
@@ -57,6 +60,7 @@
 	padding: 5px;
 	margin: 0;
 	border-radius: 5px;
+	background: none !important;
 }
 .pushes.empty {
 	background: none !important;
