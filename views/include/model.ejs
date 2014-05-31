@@ -142,7 +142,8 @@ var viewModel = {
 					var ne = els[i + 1];
 					if (i == 0) {
 						if (y2) {
-							tops.push('M' + e.xbar + ',' + e[y1]);
+							tops.push('M' + e.xbar + ',' + e[y2]);
+							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
 						} else {
 							tops.push('M' + e.xmin + ',' + e[y1]);
 							tops.push('L' + e.xbar + ',' + e[y1]);
@@ -159,22 +160,19 @@ var viewModel = {
 					}
 				}
 				if (y2) {
-					for (var i = els.length - 1; i >= 0; i--) {
+					for (var i = els.length - 1; i > 0; i--) {
 						var e = els[i];
 						var ne = els[i - 1];
-						if (ne) {
-							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
-						} else {
-							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
-						}
+						tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
 					}
 				}
 				return tops.join(' ');
 			}
 
 
-			underlay.path(smooth(els, 'ymin', 'ymax')).fill(colors[bucket % colors.length])
-//			underlay.path(smooth(els, 'ymax')).fill('none').stroke({ width: '2px', color: colors[bucket % colors.length]})
+			underlay.path(smooth(els, 'ymin', 'ymax'))
+					.fill(colors[bucket % colors.length]);
+//					.fill('none').stroke({width: "1px"});
 		}
 	}, 100)
 };
