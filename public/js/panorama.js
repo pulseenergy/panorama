@@ -351,7 +351,7 @@ var Panorama = (function () {
 		function bucketer(date) {
 			if (bucketEnd == null) {
 				bucketEnd = moment(date).clone().startOf('minute');
-				bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes()));
+				bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes() / 15));
 				bucketEnd.subtract(bucketSize[0]);
 			}
 			if (bucketEnd.isBefore(date)) {
@@ -361,7 +361,7 @@ var Panorama = (function () {
 				bucketSizeIndex++;
 				bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 });
 				if (bucketEnd.isBefore(date)) {
-					return bucketIndex++;
+					return ++bucketIndex;
 				}
 			}
 		}
