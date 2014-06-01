@@ -79,7 +79,7 @@ var viewModel = {
 		return result;
 	},
 	adjustAllLanes: _.debounce(function () {
-		var overlap = 5;
+		var overlap = 0;
 
 		function bump(node, property, amount) {
 			var previous = parseInt(window.getComputedStyle(node)[property], 10) || 0;
@@ -207,38 +207,52 @@ var viewModel = {
 			}, null);
 		}
 
-		function smooth(els, y1, y2) {
-			var tops = [];
+		function smooth(els, y1, y2, flat) {
+			var path = [];
+			var slope = 0;
 			for (var i = 0; i < els.length; i++) {
 				var e = els[i];
 				var ne = els[i + 1];
+				var ne2 = els[i + 2];
+
 				if (i == 0) {
 					if (y2) {
-						tops.push('M' + e.xbar + ',' + e[y2]);
-						tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
+						path.push('M' + e.xbar + ',' + e[y2]);
+						path.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
 					} else {
-						tops.push('M' + e.xmin + ',' + e[y1]);
-						tops.push('L' + e.xbar + ',' + e[y1]);
+						path.push('M' + e.xmin + ',' + e[y1]);
+						path.push('L' + e.xbar + ',' + e[y1]);
 					}
 				}
+
+				var nextslope = 0;
+				var c0 = [e.xbar + (e.xmax - e.xbar) / 2, e[y1] - slope / 2]; // left control point
 				if (ne) {
-					tops.push('C' + e.xmax + ',' + e[y1] + ' ' + ne.xmin + ',' + ne[y1] + ' ' + ne.xbar + ',' + ne[y1]);
+					var c1 = [ne.xmin + (ne.xbar - ne.xmin) / 2, ne[y1]]; // right control point
+					if (ne2 && !flat && Math.sign(e[y1] - ne[y1]) == Math.sign(ne[y1] - ne2[y1])) {
+						nextslope = (e[y1] - ne2[y1]) / 4;
+						// FIXME magic number: 5 for overlap = 0; 7.5 with overlap = -5
+						nextslope = Math.max(-5, Math.min(5, nextslope));
+						c1[1] += nextslope / 2;
+					}
+					path.push('C' + c0.join() + ' ' + c1.join() + ' ' + ne.xbar + ',' + ne[y1]);
 				} else {
 					if (y2) {
-						tops.push('C' + e.xmax + ',' + e[y1] + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
+						path.push('C' + c0.join() + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
 					} else {
-						tops.push('L' + e.xmax + ',' + e[y1]);
+						path.push('L' + e.xmax + ',' + e[y1]);
 					}
 				}
+				slope = nextslope;
 			}
 			if (y2) {
 				for (var i = els.length - 1; i > 0; i--) {
 					var e = els[i];
 					var ne = els[i - 1];
-					tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
+					path.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
 				}
 			}
-			return tops.join(' ');
+			return path.join(' ');
 		}
 
 		function points(row, inset) {
@@ -254,12 +268,12 @@ var viewModel = {
 		}
 
 //		rows.forEach(function (row, bucket) {
-//			underlay.path(smooth(points(row, 2.5), 'ymin', 'ymax'))
+//			underlay.path(smooth(points(row, 2.5), 'ymin', 'ymax', true))
 //					.fill(colors[bucket % colors.length]);
 //		});
 
 		rows.forEach(function (row, bucket) {
-			underlay.path(smooth(points(row, -1), 'ymin'))
+				underlay.path(smooth(points(row, -1), 'ymin', null, false))
 					.fill('none').stroke({width: "2px", color: colors[bucket % colors.length]});
 		});
 	}, 100)
