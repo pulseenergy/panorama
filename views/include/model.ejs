@@ -210,6 +210,25 @@ var viewModel = {
 		function smooth(els, y1, y2, flat) {
 			var path = [];
 			var slope = 0;
+			var c0;
+
+			function append(e, ne, ne2, y, l, r) {
+				c0 = [e.xbar + (e[r] - e.xbar) / 2, e[y] - slope / 2]; // left control point
+				if (!ne) return false;
+
+				var c1 = [ne[l] + (ne.xbar - ne[l]) / 2, ne[y]]; // right control point
+				if (ne2 && !flat && Math.sign(e[y] - ne[y]) == Math.sign(ne[y] - ne2[y])) {
+					slope = (e[y] - ne2[y]) / 4;
+					// FIXME magic number: 5 for overlap = 0; 7.5 with overlap = -5
+					slope = Math.max(-5, Math.min(5, slope));
+					c1[1] += slope / 2;
+				} else {
+					slope = 0;
+				}
+				path.push('C' + c0.join() + ' ' + c1.join() + ' ' + ne.xbar + ',' + ne[y]);
+				return true;
+			}
+
 			for (var i = 0; i < els.length; i++) {
 				var e = els[i];
 				var ne = els[i + 1];
@@ -225,31 +244,20 @@ var viewModel = {
 					}
 				}
 
-				var nextslope = 0;
-				var c0 = [e.xbar + (e.xmax - e.xbar) / 2, e[y1] - slope / 2]; // left control point
-				if (ne) {
-					var c1 = [ne.xmin + (ne.xbar - ne.xmin) / 2, ne[y1]]; // right control point
-					if (ne2 && !flat && Math.sign(e[y1] - ne[y1]) == Math.sign(ne[y1] - ne2[y1])) {
-						nextslope = (e[y1] - ne2[y1]) / 4;
-						// FIXME magic number: 5 for overlap = 0; 7.5 with overlap = -5
-						nextslope = Math.max(-5, Math.min(5, nextslope));
-						c1[1] += nextslope / 2;
-					}
-					path.push('C' + c0.join() + ' ' + c1.join() + ' ' + ne.xbar + ',' + ne[y1]);
-				} else {
+				if (!append(e, ne, ne2, y1, 'xmin', 'xmax')) {
 					if (y2) {
 						path.push('C' + c0.join() + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
 					} else {
 						path.push('L' + e.xmax + ',' + e[y1]);
 					}
 				}
-				slope = nextslope;
 			}
 			if (y2) {
 				for (var i = els.length - 1; i > 0; i--) {
 					var e = els[i];
 					var ne = els[i - 1];
-					path.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
+					var ne2 = els[i - 2];
+					append(e, ne, ne2, y2, 'xmax', 'xmin');
 				}
 			}
 			return path.join(' ');
@@ -268,7 +276,7 @@ var viewModel = {
 		}
 
 //		rows.forEach(function (row, bucket) {
-//			underlay.path(smooth(points(row, 2.5), 'ymin', 'ymax', true))
+//			underlay.path(smooth(points(row, 2.5), 'ymin', 'ymax', false))
 //					.fill(colors[bucket % colors.length]);
 //		});
 
