@@ -81,6 +81,16 @@ var viewModel = {
 	adjustAllLanes: _.debounce(function () {
 		var overlap = 0;
 
+		function sign(n) {
+			if (isNaN(n)) {
+				return n;
+			}
+			if (n === 0) {
+				return n;
+			}
+			return n > 0 ? 1 : -1;
+		}
+
 		function bump(node, property, amount) {
 			var previous = parseInt(window.getComputedStyle(node)[property], 10) || 0;
 			node.style[property] = previous + amount + "px";
@@ -217,7 +227,7 @@ var viewModel = {
 				if (!ne) return false;
 
 				var c1 = [ne[l] + (ne.xbar - ne[l]) / 2, ne[y]]; // right control point
-				if (ne2 && !flat && Math.sign(e[y] - ne[y]) == Math.sign(ne[y] - ne2[y])) {
+				if (ne2 && !flat && sign(e[y] - ne[y]) === sign(ne[y] - ne2[y])) {
 					slope = (e[y] - ne2[y]) / 4;
 					// FIXME magic number: 5 for overlap = 0; 7.5 with overlap = -5
 					slope = Math.max(-5, Math.min(5, slope));
