@@ -13,7 +13,13 @@
 <script src="js/underscore.min.js" type="text/javascript"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script src="js/svg.min.js" type="text/javascript"></script>
-<% include include/model %>
+<script src="js/panorama.js" type="text/javascript"></script>
+<script>
+	var panorama = new Panorama(<%- JSON.stringify(user.organizations) %>);
+	window.onload = function () {
+		panorama.init();
+	};
+</script>
 </head>
 <body>
 <div class="container">

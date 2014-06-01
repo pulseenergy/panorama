@@ -1,14 +1,18 @@
 module.exports = function(grunt) {
 
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    jshint: {
-      all: ['Gruntfile.js', 'app.js', 'lib/**/*.js', 'test/**/*.js']
-    }
-  });
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		jshint: {
+			options: {
+				jshintrc: true
+			},
+			all: ['*.js', 'lib/**/*.js', 'test/**/*.js', 'public/js/**/*.js', '!public/js/**/*.min.js']
+		}
+	});
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 
-  grunt.registerTask('default', ['jshint']);
-  grunt.registerTask('test', ['jshint']);
+	grunt.registerTask('default', ['jshint']);
+	grunt.registerTask('test', ['jshint']);
+
 };
