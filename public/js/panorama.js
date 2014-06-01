@@ -277,7 +277,7 @@ var Panorama = (function () {
 		return messages.join('\n');
 	};
 	Panorama.prototype.getPushTime = function (push) {
-		return moment(push.date).fromNow(true);
+		return moment(push.date).fromNow();
 	};
 	Panorama.prototype.getPushTooltip = function (push) {
 		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
