@@ -79,22 +79,26 @@ var viewModel = {
 		return result;
 	},
 	adjustAllLanes: _.debounce(function () {
-		var adjusts = 0;
-		var overlap = 0;
+		var overlap = 5;
 
-		function bump(node, amount) {
-			var previous = parseInt(node.style.marginTop, 10) || 0;
-			node.style.marginTop = previous + amount + "px";
+		function bump(node, property, amount) {
+			var previous = parseInt(window.getComputedStyle(node)[property], 10) || 0;
+			node.style[property] = previous + amount + "px";
 		}
 
 		underlay.clear();
 
+		var rows = [];
 		for (var bucket = 0; ; bucket++) {
-
-			// TODO do all the math in memory, then dump it into the DOM when finished
 			var row = document.querySelectorAll('.pushes.bucket-' + bucket)
 			if (!row.length) break;
 
+			rows.push(row);
+		}
+
+		var adjusts = 0;
+		rows.forEach(function (row, bucket) {
+			// TODO do all the math in memory, then dump it into the DOM when finished
 			for (var c = 0; c < row.length; c++) {
 				if (adjusts++ > 5000) {
 					console.log('too many layout iterations, aborting');
@@ -113,19 +117,132 @@ var viewModel = {
 
 					if (ct > (pb - overlap)) {
 						// bump previous, recursively
-//						console.log('bump (previous)', previous);
-						bump(previous, ct - pb + overlap);
+						bump(previous, 'marginTop', ct - pb + overlap);
 						c -= 2;
 					} else if (cb < (pt + overlap)) {
 						// bump current, no recursion
-//						console.log('bump (current)', current);
-						bump(current, pt - cb + overlap);
+						bump(current, 'marginTop', pt - cb + overlap);
 					}
 				}
 			}
+		});
 
-			var els = _.map(row, function (e) {
-				var inset = 0;
+		// create filled regions
+		if (false) {
+			rows.reduceRight(function (nextRow, row, bucket) {
+				for (var c = 0; c < row.length; c++) {
+					if (nextRow) {
+						var availableBelow = parseInt(nextRow[c].style.marginTop, 10) || 0;
+						if (availableBelow > 0) {
+							nextRow[c].style.marginTop = 0;
+							bump(row[c], 'paddingBottom', availableBelow);
+						}
+					}
+				}
+				return row;
+			}, null);
+		}
+
+		// try to flatten lines
+		if (false) {
+			adjusts = 0;
+			rows.reduceRight(function (nextRow, row, bucket) {
+				for (var c = 0; c < row.length; c++) {
+					if (adjusts++ > 500) {
+						console.log('too many optimisation iterations, aborting');
+						return;
+					}
+
+					var current = row[c];
+					var previous = row[c - 1];
+					var next = row[c + 1];
+
+					// is there space to steal from below
+					var availableAbove = parseInt(current.style.marginTop, 10) || 0;
+					var availableBelow = nextRow ? parseInt(nextRow[c].style.marginTop, 10) || 0 : Infinity;
+
+					var ct = current.offsetTop;
+					var cb = ct + current.offsetHeight;
+					var cm = ct + current.offsetHeight / 2;
+
+					var d = [];
+
+					// constrained by left
+					var lf = Infinity;
+					if (previous) {
+						var pt = previous.offsetTop;
+						var pb = pt + previous.offsetHeight;
+						var pm = pt + previous.offsetHeight / 2;
+						lf = Math.max(0, (pb - overlap) - ct);
+						d.push(pm - cm);
+					}
+
+					// constrained by right
+					var rf = Infinity;
+					if (next) {
+						var nt = next.offsetTop;
+						var nb = nt + next.offsetHeight;
+						var nm = nt + next.offsetHeight / 2;
+						rf = Math.max(0, (nb - overlap) - ct);
+						d.push(nm - cm);
+					}
+
+					var ed = d.reduce(function (a, b) {
+						return a + b
+					}) / d.length;
+					ed = Math.max(Math.floor(ed), 0);
+					var amt = Math.min(lf, rf, availableBelow, ed);
+//					console.log('::', current, lf, rf, availableBelow, d, ed, '=', amt);
+					if (amt > 5) {
+						bump(current, 'marginTop', amt);
+						if (nextRow) {
+							bump(nextRow[c], 'marginTop', -amt);
+						}
+						if (previous) {
+							c -= 2;
+						}
+					}
+				}
+				return row;
+			}, null);
+		}
+
+		function smooth(els, y1, y2) {
+			var tops = [];
+			for (var i = 0; i < els.length; i++) {
+				var e = els[i];
+				var ne = els[i + 1];
+				if (i == 0) {
+					if (y2) {
+						tops.push('M' + e.xbar + ',' + e[y2]);
+						tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
+					} else {
+						tops.push('M' + e.xmin + ',' + e[y1]);
+						tops.push('L' + e.xbar + ',' + e[y1]);
+					}
+				}
+				if (ne) {
+					tops.push('C' + e.xmax + ',' + e[y1] + ' ' + ne.xmin + ',' + ne[y1] + ' ' + ne.xbar + ',' + ne[y1]);
+				} else {
+					if (y2) {
+						tops.push('C' + e.xmax + ',' + e[y1] + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
+					} else {
+						tops.push('L' + e.xmax + ',' + e[y1]);
+					}
+				}
+			}
+			if (y2) {
+				for (var i = els.length - 1; i > 0; i--) {
+					var e = els[i];
+					var ne = els[i - 1];
+					tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
+				}
+			}
+			return tops.join(' ');
+		}
+
+		function points(row, inset) {
+			return _.map(row, function (e) {
 				var xmin = e.offsetLeft + inset;
 				var xmax = e.offsetLeft + e.offsetWidth - inset;
 				var xbar = e.offsetLeft + e.offsetWidth / 2;
@@ -134,46 +251,17 @@ var viewModel = {
 				var ybar = e.offsetTop + e.offsetHeight / 2;
 				return { xmin: xmin, xmax: xmax, xbar: xbar, ymin: ymin, ymax: ymax, ybar: ybar };
 			});
-
-			function smooth(els, y1, y2) {
-				var tops = [];
-				for (var i = 0; i < els.length; i++) {
-					var e = els[i];
-					var ne = els[i + 1];
-					if (i == 0) {
-						if (y2) {
-							tops.push('M' + e.xbar + ',' + e[y2]);
-							tops.push('C' + e.xmin + ',' + e[y2] + ' ' + e.xmin + ',' + e[y1] + ' ' + e.xbar + ',' + e[y1]);
-						} else {
-							tops.push('M' + e.xmin + ',' + e[y1]);
-							tops.push('L' + e.xbar + ',' + e[y1]);
-						}
-					}
-					if (ne) {
-						tops.push('C' + e.xmax + ',' + e[y1] + ' ' + ne.xmin + ',' + ne[y1] + ' ' + ne.xbar + ',' + ne[y1]);
-					} else {
-						if (y2) {
-							tops.push('C' + e.xmax + ',' + e[y1] + ' ' + e.xmax + ',' + e[y2] + ' ' + e.xbar + ',' + e[y2]);
-						} else {
-							tops.push('L' + e.xmax + ',' + e[y1]);
-						}
-					}
-				}
-				if (y2) {
-					for (var i = els.length - 1; i > 0; i--) {
-						var e = els[i];
-						var ne = els[i - 1];
-						tops.push('C' + e.xmin + ',' + e[y2] + ' ' + ne.xmax + ',' + ne[y2] + ' ' + ne.xbar + ',' + ne[y2]);
-					}
-				}
-				return tops.join(' ');
-			}
-
-
-			underlay.path(smooth(els, 'ymin', 'ymax'))
-					.fill(colors[bucket % colors.length]);
-//					.fill('none').stroke({width: "1px"});
 		}
+
+//		rows.forEach(function (row, bucket) {
+//			underlay.path(smooth(points(row, 2.5), 'ymin', 'ymax'))
+//					.fill(colors[bucket % colors.length]);
+//		});
+
+		rows.forEach(function (row, bucket) {
+			underlay.path(smooth(points(row, -1), 'ymin'))
+					.fill('none').stroke({width: "2px", color: colors[bucket % colors.length]});
+		});
 	}, 100)
 };
 viewModel.startFormatted = ko.computed(function () {
