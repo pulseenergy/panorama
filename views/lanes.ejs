@@ -34,7 +34,8 @@
 					<!-- ko foreach: { data: $root.bucketize(pushes), afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 						<li class="push">
-							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data), 'data-hint': $root.getPushTooltip($data) }">
+							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data),
+									'data-hint': $root.getPushTooltip($data) }, css: { 'hint--top-left': $parentContext.$parentContext.$index() > $root.repos().length / 2 }">
 								<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
 								<span class="commit-count push-info" data-bind="text: size"></span>
 								<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>

@@ -116,4 +116,14 @@
 
 [data-hint]:after {
 	white-space: pre;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 70ex;
+}
+
+.hint--top-left:after {
+	right: 50%;
+	left: inherit;
+	margin-right: -18px;
+	margin-left: 0;
 }
