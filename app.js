@@ -13,12 +13,16 @@ app.use(express.session({ secret: 'f8fb234f3cf333241e3f7c74' }));
 
 if (process.env.GITHUB_API_TOKEN) {
 	var token = process.env.GITHUB_API_TOKEN;
-
+	console.log('github auth via personal access token');
 	app.use(require('./lib/noauth')(token));
 } else {
 	var id = process.env.GITHUB_APP_ID;
 	var secret = process.env.GITHUB_APP_SECRET;
-
+	if (!id || !secret) {
+		console.error('github auth environment variables not found -- see README');
+		return process.exit(1);
+	}
+	console.log('github auth via registered oauth application');
 	app.use(require('./lib/everyauth')(id, secret));
 }
 
