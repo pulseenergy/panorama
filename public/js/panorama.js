@@ -366,6 +366,21 @@ var Panorama = (function () {
 			}
 		}
 
+		function compressPushes(pushes) {
+			var compressed = [];
+			_.each(pushes, function (push) {
+				var last = _.last(compressed);
+				if (last && push.repo === last.repo && push.user.login === last.user.login && push.bucket === last.bucket && push.branch === last.branch) {
+					last.commits = last.commits.concat(push.commits);
+					last.before = push.before;
+					last.size = last.commits.length;
+				} else {
+					compressed.push(push);
+				}
+			});
+			return compressed;
+		}
+
 		reqwest({
 			url: url,
 			type: 'json'
@@ -383,7 +398,7 @@ var Panorama = (function () {
 				return {
 					name: repo,
 					simpleName: simpleName(repo),
-					pushes: pushes,
+					pushes: compressPushes(pushes),
 					color: colors[index++ % colors.length]
 				};
 			}), function (repo) {
