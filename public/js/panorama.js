@@ -371,9 +371,12 @@ var Panorama = (function () {
 			_.each(pushes, function (push) {
 				var last = _.last(compressed);
 				if (last && push.repo === last.repo && push.user.login === last.user.login && push.bucket === last.bucket && push.branch === last.branch) {
-					last.commits = last.commits.concat(push.commits);
-					last.before = push.before;
-					last.size = last.commits.length;
+					var combined = _.clone(last);
+					combined.commits = last.commits.concat(push.commits);
+					combined.before = push.before;
+					combined.size = combined.commits.length;
+					compressed.pop();
+					compressed.push(combined);
 				} else {
 					compressed.push(push);
 				}
