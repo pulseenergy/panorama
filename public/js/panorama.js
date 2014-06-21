@@ -401,7 +401,8 @@ var Panorama = (function () {
 				return {
 					name: repo,
 					simpleName: simpleName(repo),
-					pushes: compressPushes(pushes),
+					pushes: pushes,
+					compressedPushes: compressPushes(pushes),
 					color: colors[index++ % colors.length]
 				};
 			}), function (repo) {
