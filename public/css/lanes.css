@@ -28,8 +28,8 @@
 }
 .push img {
 	width: 50px;
-	border-radius: 10px 10px 0 0;
-	border-bottom: 5px solid crimson;
+	border-radius: 100%;
+	border: 2px solid crimson;
 	vertical-align: bottom;
 }
 .push a:visited img {
