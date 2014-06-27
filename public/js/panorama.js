@@ -252,20 +252,83 @@ var Panorama = (function () {
 		this.adjustAllLanes = _.debounce(function () {
 			drawLanesSvg(this.underlay);
 		}.bind(this), 100);
-		this.startFormatted = ko.computed(function () {
-			return moment(this.startDate()).fromNow();
-		}, this);
-		this.endFormatted = ko.computed(function () {
-			return moment(this.endDate()).fromNow();
-		}, this);
-		this.filteredPushes = ko.computed(function() {
-			var filter = this.filter();
-			if (!filter) {
-				return this.pushes();
-			} else {
-				return ko.utils.arrayFilter(this.pushes(), filter);
-			}
-		}, this);
+		this.filteredPushes = ko.computed({
+			read: function() {
+				var filter = this.filter();
+				if (!filter) {
+					return this.pushes();
+				} else {
+					return ko.utils.arrayFilter(this.pushes(), filter);
+				}
+			},
+			owner: this,
+			deferEvaluation: true
+		});
+		this.buckets = ko.computed({
+			read: function () {
+				var pushes = this.pushes();
+				var bucketEnd;
+				var bucketIndex = 0;
+				var bucketSizeIndex = 0;
+				var bucketSize = [{ minutes: 15 }, { hours: 1 }, { hours: 4 }];
+				var buckets = [];
+
+				function bucketer(date) {
+					if (bucketEnd == null) {
+						bucketEnd = moment(date).clone().startOf('minute');
+						bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes() / 15));
+						bucketEnd.subtract(bucketSize[0]);
+						buckets.push(bucketEnd.clone());
+					}
+					if (bucketEnd.isBefore(date)) {
+						return bucketIndex;
+					}
+					while (true) {
+						bucketSizeIndex++;
+						bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 });
+						if (bucketEnd.isBefore(date)) {
+							buckets.push(bucketEnd.clone());
+							return ++bucketIndex;
+						}
+					}
+				}
+
+				_.each(pushes, function (push) {
+					push.bucket = bucketer(push.date);
+				});
+
+				return buckets;
+			},
+			owner: this,
+			deferEvaluation: true
+		});
+		this.bucketedPushesByRepo = ko.computed({
+			read: function () {
+				var buckets = this.buckets();
+				var repos = this.repos();
+
+				return _.map(repos, function (repo) {
+					var result = [];
+					while (result.length < buckets.length) {
+						result.push({
+							bucket: result.length,
+							bucketClass: 'bucket-' + result.length + ' bucket-color-' + result.length % colors.length,
+							pushes: []
+						});
+					}
+					var compressed = compressPushes(repo.pushes);
+					compressed.forEach(function (push) {
+						result[push.bucket].pushes.push(push);
+					});
+					return {
+						repo: repo,
+						buckets: result
+					};
+				});
+			},
+			owner: this,
+			deferEvaluation: true
+		});
 	}
 
 	Panorama.prototype.getGithubCompareLink = function (push) {
@@ -286,13 +349,6 @@ var Panorama = (function () {
 	Panorama.prototype.getPushTooltip = function (push) {
 		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
 	};
-	Panorama.prototype.getSimpleRepoName = function (name) {
-		var organization = this.organization();
-		if (organization && name && name.indexOf(organization.login + '/') === 0) {
-			return name.substr(organization.login.length + 1);
-		}
-		return name;
-	};
 	Panorama.prototype.setFilter = function (data, event) {
 		if (event.target.className === 'repo-tag') {
 			this.filter(function (push) { return push.repo.name === data.repo.name; });
@@ -301,24 +357,6 @@ var Panorama = (function () {
 		} else {
 			this.filter(null);
 		}
-	};
-	Panorama.prototype.bucketize = function (pushes) {
-		var max = _.last(this.pushes());
-		max = max ? max.bucket : 0;
-
-		var result = [];
-		while (result.length <= max) {
-			result.push({
-				bucket: result.length,
-				bucketClass: 'bucket-' + result.length + ' bucket-color-' + result.length % colors.length,
-				pushes: []
-			});
-		}
-
-		pushes.forEach(function (push) {
-			result[push.bucket].pushes.push(push);
-		});
-		return result;
 	};
 	Panorama.prototype.init = function () {
 		var underlay = document.getElementById('underlay');
@@ -348,58 +386,12 @@ var Panorama = (function () {
 			return name;
 		}
 
-		var bucketEnd;
-		var bucketIndex = 0;
-		var bucketSizeIndex = 0;
-		var bucketSize = [{ minutes: 15 }, { hours: 1 }, { hours: 4 }];
-		function bucketer(date) {
-			if (bucketEnd == null) {
-				bucketEnd = moment(date).clone().startOf('minute');
-				bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes() / 15));
-				bucketEnd.subtract(bucketSize[0]);
-				viewModel.buckets.push({index: bucketIndex, end: bucketEnd});
-			}
-			if (bucketEnd.isBefore(date)) {
-				return bucketIndex;
-			}
-			while (true) {
-				bucketSizeIndex++;
-				bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 });
-				if (bucketEnd.isBefore(date)) {
-					++bucketIndex;
-					viewModel.buckets.push({index: bucketIndex, end: bucketEnd});
-					return bucketIndex;
-				}
-			}
-		}
-
-		function compressPushes(pushes) {
-			var compressed = [];
-			_.each(pushes, function (push) {
-				var last = _.last(compressed);
-				if (last && push.repo === last.repo && push.user.login === last.user.login && push.bucket === last.bucket && push.branch === last.branch) {
-					var combined = _.clone(last);
-					combined.commits = last.commits.concat(push.commits);
-					combined.before = push.before;
-					combined.size = combined.commits.length;
-					compressed.pop();
-					compressed.push(combined);
-				} else {
-					compressed.push(push);
-				}
-			});
-			return compressed;
-		}
-
 		reqwest({
 			url: url,
 			type: 'json'
 		}).then(function (response) {
 
 			var pushes = response.pushes;
-			_.each(pushes, function (push) {
-				push.bucket = bucketer(push.date);
-			});
 
 			var index = 0;
 			var repos = _.sortBy(_.map(_.groupBy(pushes, function (push) {
@@ -418,7 +410,6 @@ var Panorama = (function () {
 				_.each(repo.pushes, function (push) {
 					push.repo = repo;
 				});
-				repo.compressedPushes = compressPushes(repo.pushes);
 			});
 			viewModel.startDate(response.start);
 			viewModel.endDate(response.end);
@@ -428,6 +419,24 @@ var Panorama = (function () {
 		}).fail(function (err, msg) {
 			console.error(msg);
 		});
+	}
+
+	function compressPushes(pushes) {
+		var compressed = [];
+		_.each(pushes, function (push) {
+			var last = _.last(compressed);
+			if (last && push.repo === last.repo && push.user.login === last.user.login && push.bucket === last.bucket && push.branch === last.branch) {
+				var combined = _.clone(last);
+				combined.commits = last.commits.concat(push.commits);
+				combined.before = push.before;
+				combined.size = combined.commits.length;
+				compressed.pop();
+				compressed.push(combined);
+			} else {
+				compressed.push(push);
+			}
+		});
+		return compressed;
 	}
 
 	return Panorama;

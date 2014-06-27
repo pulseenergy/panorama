@@ -24,7 +24,7 @@
 	margin-top: 5px;
 }
 .push:hover {
-	cursor: pointer;
+
 }
 .push img {
 	width: 50px;
@@ -34,6 +34,9 @@
 }
 .push a:visited img {
 	border-color: white;
+}
+.time .push {
+	font-size: smaller;
 }
 
 .repo {
@@ -55,9 +58,9 @@
 	width: 0;
 	white-space: nowrap;
 }
-.time-header {
-	padding-left: 25px;
-	margin: 150px 0 0;
+.time .repo-name {
+	-webkit-transform: none;
+	transform: none;
 }
 .pushes {
 	list-style-type: none;
