@@ -29,6 +29,16 @@
 	<div id="body">
 		<div id="content">
 			<div class="lane-wrapper">
+				<div class="repo">
+					<h3 class="time-header" data-bind="visible: $root.buckets().length > 0">Time</h3>
+					<!-- ko foreach: { data: $root.buckets } -->
+					<ul class="pushes" data-bind="css: 'bucket-' + index">
+						<li class="push">
+							<span class="time" data-bind="text: $root.formatTimeAgo(end)"></span>
+						</li>
+					</ul>
+					<!-- /ko -->
+				</div>
 				<!-- ko foreach: repos --><div class="repo">
 					<h3 class="repo-name" data-bind="text: simpleName"></h3>
 					<!-- ko foreach: { data: $root.bucketize(compressedPushes), afterRender: $root.adjustAllLanes } -->

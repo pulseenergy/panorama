@@ -55,6 +55,10 @@
 	width: 0;
 	white-space: nowrap;
 }
+.time-header {
+	padding-left: 25px;
+	margin: 150px 0 0;
+}
 .pushes {
 	list-style-type: none;
 	padding: 5px;

@@ -248,6 +248,7 @@ var Panorama = (function () {
 		this.startDate = ko.observable();
 		this.endDate = ko.observable();
 		this.filter = ko.observable();
+		this.buckets = ko.observableArray();
 		this.adjustAllLanes = _.debounce(function () {
 			drawLanesSvg(this.underlay);
 		}.bind(this), 100);
@@ -276,8 +277,11 @@ var Panorama = (function () {
 		});
 		return messages.join('\n');
 	};
+	Panorama.prototype.formatTimeAgo = function (time) {
+		return moment(time).fromNow();
+	};
 	Panorama.prototype.getPushTime = function (push) {
-		return moment(push.date).fromNow();
+		return this.formatTimeAgo(push.date);
 	};
 	Panorama.prototype.getPushTooltip = function (push) {
 		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
@@ -353,6 +357,7 @@ var Panorama = (function () {
 				bucketEnd = moment(date).clone().startOf('minute');
 				bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes() / 15));
 				bucketEnd.subtract(bucketSize[0]);
+				viewModel.buckets.push({index: bucketIndex, end: bucketEnd});
 			}
 			if (bucketEnd.isBefore(date)) {
 				return bucketIndex;
@@ -361,7 +366,9 @@ var Panorama = (function () {
 				bucketSizeIndex++;
 				bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 });
 				if (bucketEnd.isBefore(date)) {
-					return ++bucketIndex;
+					++bucketIndex;
+					viewModel.buckets.push({index: bucketIndex, end: bucketEnd});
+					return bucketIndex;
 				}
 			}
 		}
