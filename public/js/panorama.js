@@ -65,6 +65,10 @@ var Panorama = (function () {
 					var pt = previous.offsetTop;
 					var pb = pt + previous.offsetHeight;
 
+					if (c === 1) { // time legends don't take up any visual space, so don't connect to their bottoms
+						pb = pt + 5;
+					}
+
 					var ct = current.offsetTop;
 					var cb = ct + current.offsetHeight;
 
