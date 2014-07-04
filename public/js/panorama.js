@@ -248,7 +248,6 @@ var Panorama = (function () {
 		this.startDate = ko.observable();
 		this.endDate = ko.observable();
 		this.filter = ko.observable();
-		this.buckets = ko.observableArray();
 		this.adjustAllLanes = _.debounce(function () {
 			drawLanesSvg(this.underlay);
 		}.bind(this), 100);
@@ -297,6 +296,16 @@ var Panorama = (function () {
 					push.bucket = bucketer(push.date);
 				});
 
+				return buckets;
+			},
+			owner: this,
+			deferEvaluation: true
+		});
+		this.bucketLabels = ko.computed({
+			read: function () {
+				var buckets = _.map(this.buckets(), this.formatTimeAgo.bind(this));
+				buckets.unshift("now");
+				buckets.pop();
 				return buckets;
 			},
 			owner: this,
