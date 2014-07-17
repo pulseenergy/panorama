@@ -28,8 +28,8 @@
 }
 .push img {
 	width: 50px;
-	border-radius: 100%;
-	border: 2px solid crimson;
+	border-radius: 10px;
+	border-color: crimson;
 	vertical-align: bottom;
 }
 .push a:visited img {
@@ -37,6 +37,12 @@
 }
 .time .push {
 	font-size: smaller;
+}
+
+.push:hover img {
+	border-width: 2px;
+	border-style: solid;
+	margin: -2px;
 }
 
 .repo {
