@@ -345,6 +345,9 @@ var Panorama = (function () {
 	}
 
 	Panorama.prototype.getGithubCompareLink = function (push) {
+		if (push.size === 1) {
+			return 'https://github.com/' + push.repo.name + '/commit/' + push.head;
+		}
 		return 'https://github.com/' + [push.repo.name, 'compare', push.before + '...' + push.head].join('/');
 	};
 	Panorama.prototype.getPushCommits = function (push) {
