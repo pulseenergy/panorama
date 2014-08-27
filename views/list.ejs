@@ -16,7 +16,7 @@
 <script>
 	var panorama = new Panorama(<%- JSON.stringify(user.organizations) %>);
 	window.onload = function () {
-		panorama.init();
+		panorama.init('list');
 	};
 </script>
 </head>
@@ -25,9 +25,9 @@
 
 	<% include include/header %>
 
+	<p class="loading" data-bind="visible: loading">loading...</p>
 	<div id="body">
-		<div id="content">
-			<p class="loading" data-bind="visible: loading">loading...</p>
+		<div id="content" style="display: none;" data-bind="visible: true">
 			<nav data-bind="visible: filter">
 				<button data-bind="click: setFilter">Clear filter</button>
 			</nav>

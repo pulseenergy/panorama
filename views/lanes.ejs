@@ -17,7 +17,7 @@
 <script>
 	var panorama = new Panorama(<%- JSON.stringify(user.organizations) %>);
 	window.onload = function () {
-		panorama.init();
+		panorama.init('lanes');
 	};
 </script>
 </head>
