@@ -63,6 +63,7 @@
 	margin: 150px 0 0;
 	width: 0;
 	white-space: nowrap;
+	cursor: pointer;
 }
 .time .repo-name {
 	-webkit-transform: none;

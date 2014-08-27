@@ -40,7 +40,7 @@
 					<!-- /ko -->
 				</div>
 				<!-- ko foreach: bucketedPushesByRepo --><div class="repo">
-					<h3 class="repo-name" data-bind="text: repo.simpleName"></h3>
+					<h3 class="repo-name" data-bind="text: repo.simpleName, click: $root.setFilter.bind($root)"></h3>
 					<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 						<li class="push">

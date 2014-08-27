@@ -366,10 +366,15 @@ var Panorama = (function () {
 		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
 	};
 	Panorama.prototype.setFilter = function (data, event) {
-		if (event.target.className === 'repo-tag') {
+		if (this.view() === 'lanes') {
+			window.location = './list?repo=' + data.repo.name;
+			return;
+		}
+
+		if (data.repo) {
 			history.pushState(null, null, '?repo=' + data.repo.name);
 			this.filter(function (push) { return push.repo.name === data.repo.name; });
-		} else if (event.target.className === 'push-user') {
+		} else if (data.user) {
 			history.pushState(null, null, '?user=' + data.user.login);
 			this.filter(function (push) { return push.user.login === data.user.login; });
 		} else {
@@ -382,10 +387,10 @@ var Panorama = (function () {
 		if (_.isEmpty(parsed)) {
 			return this.filter(null);
 		}
+		// TODO: could make these additive, but is that intuitive?
 		if (parsed.user) {
 			this.filter(function (push) { return push.user.login === parsed.user; });
-		}
-		if (parsed.repo) {
+		} else if (parsed.repo) {
 			this.filter(function (push) { return push.repo.name === parsed.repo; });
 		}
 	};
@@ -401,8 +406,8 @@ var Panorama = (function () {
 			window.location = './' + view;
 		});
 		ko.applyBindings(this);
-		this.applyWindowLocation();
 
+		this.applyWindowLocation();
 		window.onpopstate = this.applyWindowLocation.bind(this);
 	};
 
