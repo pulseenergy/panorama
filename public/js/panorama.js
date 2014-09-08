@@ -371,10 +371,10 @@ var Panorama = (function () {
 			return;
 		}
 
-		if (data.repo) {
+		if (event.target.classList.contains("filter-repo")) {
 			history.pushState(null, null, '?repo=' + data.repo.name);
 			this.filter(function (push) { return push.repo.name === data.repo.name; });
-		} else if (data.user) {
+		} else if (event.target.classList.contains("filter-user")) {
 			history.pushState(null, null, '?user=' + data.user.login);
 			this.filter(function (push) { return push.user.login === data.user.login; });
 		} else {
