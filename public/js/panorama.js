@@ -247,7 +247,6 @@ var Panorama = (function () {
 		this.organization = ko.observable(_.first(organizations));
 		this.view = ko.observable('list');
 		this.loading = ko.observable(false);
-		this.repos = ko.observableArray();
 		this.pushes = ko.observableArray();
 		this.startDate = ko.observable();
 		this.endDate = ko.observable();
@@ -255,6 +254,33 @@ var Panorama = (function () {
 		this.adjustAllLanes = _.debounce(function () {
 			drawLanesSvg(this.underlay);
 		}.bind(this), 100);
+		this.repos = ko.computed({
+			read: function() {
+				var org = this.organization();
+				function simpleName(name) {
+					if (org && name.indexOf(org.login) === 0) {
+						return name.substr(org.login.length + 1);
+					}
+					return name;
+				}
+
+				var index = 0;
+				return _.sortBy(_.map(_.groupBy(this.pushes(), function (push) {
+					return push.repo;
+				}), function (pushes, repo) {
+					return {
+						name: repo,
+						simpleName: simpleName(repo),
+						pushes: pushes,
+						color: colors[index++ % colors.length]
+					};
+				}), function (repo) {
+					return repo.name;
+				});
+			},
+			owner: this,
+			deferEvaluation: true
+		});
 		this.filteredPushes = ko.computed({
 			read: function() {
 				var filter = this.filter();
@@ -331,7 +357,9 @@ var Panorama = (function () {
 					}
 					var compressed = compressPushes(repo.pushes);
 					compressed.forEach(function (push) {
-						result[push.bucket].pushes.push(push);
+						if (push.bucket < result.length) {
+							result[push.bucket].pushes.push(push);
+						} // else buckets are stale
 					});
 					return {
 						repo: repo,
@@ -346,15 +374,18 @@ var Panorama = (function () {
 
 	Panorama.prototype.getGithubCompareLink = function (push) {
 		if (push.size === 1) {
-			return 'https://github.com/' + push.repo.name + '/commit/' + push.head;
+			return 'https://github.com/' + push.repo + '/commit/' + push.head;
 		}
-		return 'https://github.com/' + [push.repo.name, 'compare', push.before + '...' + push.head].join('/');
+		return 'https://github.com/' + [push.repo, 'compare', push.before + '...' + push.head].join('/');
 	};
 	Panorama.prototype.getPushCommits = function (push) {
 		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
 			return '‣ ' + msg;
 		});
 		return messages.join('\n');
+	};
+	Panorama.prototype.getRepository = function (repoName) {
+		return _.findWhere(this.repos(), {name: repoName});
 	};
 	Panorama.prototype.formatTimeAgo = function (time) {
 		return moment(time).fromNow();
@@ -372,8 +403,8 @@ var Panorama = (function () {
 		}
 
 		if (event.target.classList.contains("filter-repo")) {
-			history.pushState(null, null, '?repo=' + data.repo.name);
-			this.filter(function (push) { return push.repo.name === data.repo.name; });
+			history.pushState(null, null, '?repo=' + data.repo);
+			this.filter(function (push) { return push.repo === data.repo; });
 		} else if (event.target.classList.contains("filter-user")) {
 			history.pushState(null, null, '?user=' + data.user.login);
 			this.filter(function (push) { return push.user.login === data.user.login; });
@@ -391,7 +422,7 @@ var Panorama = (function () {
 		if (parsed.user) {
 			this.filter(function (push) { return push.user.login === parsed.user; });
 		} else if (parsed.repo) {
-			this.filter(function (push) { return push.repo.name === parsed.repo; });
+			this.filter(function (push) { return push.repo === parsed.repo; });
 		}
 	};
 	Panorama.prototype.init = function (view) {
@@ -431,42 +462,15 @@ var Panorama = (function () {
 		var org = viewModel.organization();
 		var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
 
-		function simpleName(name) {
-			if (org && name.indexOf(org.login) === 0) {
-				return name.substr(org.login.length + 1);
-			}
-			return name;
-		}
-
 		reqwest({
 			url: url,
 			type: 'json'
 		}).then(function (response) {
 
 			var pushes = response.pushes;
-
-			var index = 0;
-			var repos = _.sortBy(_.map(_.groupBy(pushes, function (push) {
-				return push.repo;
-			}), function (pushes, repo) {
-				return {
-					name: repo,
-					simpleName: simpleName(repo),
-					pushes: pushes,
-					color: colors[index++ % colors.length]
-				};
-			}), function (repo) {
-				return repo.name;
-			});
-			_.each(repos, function (repo) {
-				_.each(repo.pushes, function (push) {
-					push.repo = repo;
-				});
-			});
 			viewModel.startDate(response.start);
 			viewModel.endDate(response.end);
-			viewModel.pushes(pushes);
-			viewModel.repos(repos);
+			viewModel.pushes(response.pushes);
 			viewModel.loading(false);
 		}).fail(function (err, msg) {
 			console.error(msg);
