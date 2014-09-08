@@ -385,7 +385,8 @@ var Panorama = (function () {
 		return messages.join('\n');
 	};
 	Panorama.prototype.getRepository = function (repoName) {
-		return _.findWhere(this.repos(), {name: repoName});
+		var repo = _.findWhere(this.repos(), {name: repoName});
+		return repo || {name: '', simpleName: '', color: 'black'};
 	};
 	Panorama.prototype.formatTimeAgo = function (time) {
 		return moment(time).fromNow();
