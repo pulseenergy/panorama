@@ -1,18 +1,18 @@
 var Panorama = (function () {
-	"use strict";
+	'use strict';
 
 	var colors = [
-		"#807c59",
-		"#618059",
-		"#73bf60",
-		"#ccae8f",
-		"#806c59",
-		"#bf9060",
-		"#65567a",
-		"#8860bf",
-		"#bfb660",
-		"#cc8f8f",
-		"#bf6060"
+		'#807c59',
+		'#618059',
+		'#73bf60',
+		'#ccae8f',
+		'#806c59',
+		'#bf9060',
+		'#65567a',
+		'#8860bf',
+		'#bfb660',
+		'#cc8f8f',
+		'#bf6060'
 	];
 
 	function sign(n) {
@@ -27,7 +27,7 @@ var Panorama = (function () {
 
 	function bump(node, property, amount) {
 		var previous = parseInt(window.getComputedStyle(node)[property], 10) || 0;
-		node.style[property] = previous + amount + "px";
+		node.style[property] = previous + amount + 'px';
 	}
 
 	function sum(arr) {
@@ -238,7 +238,7 @@ var Panorama = (function () {
 
 		rows.forEach(function (row, bucket) {
 			underlay.path(smooth(points(row, -1), 'ymin', null, false))
-				.fill('none').stroke({width: "2px", color: colors[bucket % colors.length]});
+				.fill('none').stroke({width: '2px', color: colors[bucket % colors.length]});
 		});
 	}
 
@@ -334,7 +334,7 @@ var Panorama = (function () {
 		this.bucketLabels = ko.computed({
 			read: function () {
 				var buckets = _.map(this.buckets(), this.formatTimeAgo.bind(this));
-				buckets.unshift("now");
+				buckets.unshift('now');
 				buckets.pop();
 				return buckets;
 			},
@@ -402,10 +402,10 @@ var Panorama = (function () {
 			return;
 		}
 
-		if (event.target.classList.contains("filter-repo")) {
+		if (event.target.classList.contains('filter-repo')) {
 			history.pushState(null, null, '?repo=' + data.repo);
 			this.filter(function (push) { return push.repo === data.repo; });
-		} else if (event.target.classList.contains("filter-user")) {
+		} else if (event.target.classList.contains('filter-user')) {
 			history.pushState(null, null, '?user=' + data.user.login);
 			this.filter(function (push) { return push.user.login === data.user.login; });
 		} else {
