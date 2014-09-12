@@ -248,8 +248,6 @@ var Panorama = (function () {
 		this.view = ko.observable('list');
 		this.loading = ko.observable(false);
 		this.pushes = ko.observableArray();
-		this.startDate = ko.observable();
-		this.endDate = ko.observable();
 		this.filter = ko.observable();
 		this.adjustAllLanes = _.debounce(function () {
 			drawLanesSvg(this.underlay);
@@ -372,18 +370,6 @@ var Panorama = (function () {
 		});
 	}
 
-	Panorama.prototype.getGithubCompareLink = function (push) {
-		if (push.size === 1) {
-			return 'https://github.com/' + push.repo + '/commit/' + push.head;
-		}
-		return 'https://github.com/' + [push.repo, 'compare', push.before + '...' + push.head].join('/');
-	};
-	Panorama.prototype.getPushCommits = function (push) {
-		var messages = _.map(_.pluck(push.commits, 'message'), function (msg) {
-			return '‣ ' + msg;
-		});
-		return messages.join('\n');
-	};
 	Panorama.prototype.getRepository = function (repoName) {
 		var repo = _.findWhere(this.repos(), {name: repoName});
 		return repo || {name: '', simpleName: '', color: 'black'};
@@ -393,9 +379,6 @@ var Panorama = (function () {
 	};
 	Panorama.prototype.getPushTime = function (push) {
 		return this.formatTimeAgo(push.date);
-	};
-	Panorama.prototype.getPushTooltip = function (push) {
-		return this.getPushTime(push) + '\n' + this.getPushCommits(push);
 	};
 	Panorama.prototype.setFilter = function (data, event) {
 		if (this.view() === 'lanes') {
@@ -457,21 +440,96 @@ var Panorama = (function () {
 		return map;
 	}
 
+	function PushEvent(event) {
+		this.event = event;
+
+		this.id = event.payload.push_id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: event.actor.avatar_url
+		};
+		this.date = event.created_at;
+		this.commits = event.payload.commits;
+		this.size = this.commits.length;
+		this.branch = event.payload.ref.replace('refs/heads/', '');
+		this.head = event.payload.head;
+		this.before = event.payload.before;
+	}
+
+	PushEvent.prototype.link = function () {
+		if (this.size < 2) {
+			return 'https://github.com/' + this.repo + '/commit/' + this.head;
+		}
+		return 'https://github.com/' + this.repo + '/compare/' + this.before + '...' + this.head;
+	};
+
+	PushEvent.prototype.message = function () {
+		return _.map(_.pluck(this.commits, 'message'), function (msg) {
+			return '‣ ' + msg;
+		}).join('\n');
+	};
+
+	PushEvent.prototype.tooltip = function () {
+		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	function CommentEvent(event) {
+		this.event = event;
+
+		this.id = event.payload.comment.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: event.actor.avatar_url
+		};
+		this.date = event.created_at;
+		this.commits = [];
+		this.size = 0;
+		this.branch = null; // ???
+		this.head = event.payload.comment.commit_id;
+		this.before = event.payload.comment.commit_id;
+	}
+
+	CommentEvent.prototype.link = function () {
+		return this.event.payload.comment.html_url;
+	};
+
+	CommentEvent.prototype.message = function () {
+		return '‣ ' + this.event.payload.comment.body;
+	};
+
+	CommentEvent.prototype.tooltip = function () {
+		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
 	function fetchPushes(viewModel) {
 		viewModel.loading(true);
 
 		var org = viewModel.organization();
-		var url = org == null ? './a/user/pushes' : './a/organization/' + org.login + '/pushes';
+		var url = org == null ? './a/user/events' : './a/organization/' + org.login + '/events';
 
 		reqwest({
 			url: url,
 			type: 'json'
 		}).then(function (response) {
+			var seen = {};
 
-			var pushes = response.pushes;
-			viewModel.startDate(response.start);
-			viewModel.endDate(response.end);
-			viewModel.pushes(response.pushes);
+			var pushes = [];
+			_.each(response, function (event) {
+				if (!seen[event.type]) {
+					console.log(event);
+					seen[event.type] = true;
+				}
+				if (event.type === 'PushEvent') {
+					pushes.push(new PushEvent(event));
+				} else if (event.type === 'CommitCommentEvent') {
+					pushes.push(new CommentEvent(event));
+				}
+			});
+			viewModel.pushes(pushes);
 			viewModel.loading(false);
 		}).fail(function (err, msg) {
 			console.error(msg);

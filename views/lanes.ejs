@@ -44,11 +44,11 @@
 					<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 						<li class="push">
-							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: $root.getGithubCompareLink($data),
-									'data-hint': $root.getPushTooltip($data) }, css: { 'hint--top-left': $parentContext.$parentContext.$index() > $root.repos().length / 2 }">
-								<img width="50" height="50" data-bind="attr: { src: user.image, alt: user.login }">
+							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: link(),
+									'data-hint': tooltip() }, css: { 'hint--top-left': $parentContext.$parentContext.$index() > $root.repos().length / 2 }">
+								<img width="50" height="50" data-bind="attr: { src: user.image + 's=50', alt: user.login }">
 								<span class="commit-count push-info" data-bind="text: size"></span>
-								<span class="branch push-info" data-bind="visible: branch !== 'master'">Ͱ</span>
+								<span class="branch push-info" data-bind="visible: branch && branch !== 'master'">Ͱ</span>
 							</a>
 						</li>
 					</ul>

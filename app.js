@@ -43,7 +43,7 @@ function checkAuthLogin(req, res, next) {
 	}
 	if (!req.user.organizations) {
 		return request(githubApi.organizations(req.user, req.session.authToken), function (err, response, body) {
-			req.user.organizations = JSON.parse(body);
+			req.user.organizations = body;
 			next();
 		});
 	}
@@ -67,6 +67,9 @@ app.get('/lanes', checkAuthLogin, function (req, res) {
 // api
 app.get('/a/organization/:organization/pushes', checkAuth401, actions.getOrgCommits);
 app.get('/a/user/pushes', checkAuth401, actions.getUserCommits);
+
+app.get('/a/organization/:organization/events', checkAuth401, actions.getOrgEvents);
+app.get('/a/user/events', checkAuth401, actions.getUserEvents);
 
 app.use(function handleError(err, req, res, next) {
 	console.error(err.stack);
