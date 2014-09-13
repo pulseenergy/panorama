@@ -536,6 +536,91 @@ var Panorama = (function () {
 		return 'octicon-comment';
 	};
 
+	function TagEvent(event) {
+		this.event = event;
+
+		this.id = event.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: event.actor.avatar_url
+		};
+		this.date = event.created_at;
+		this.commits = [];
+		this.size = 0;
+		this.branch = event.payload.ref;
+		this.head = null;
+		this.before = null;
+	}
+
+	TagEvent.prototype.link = function () {
+		return 'https://github.com/' + this.repo + '/tree/' + this.event.payload.ref;
+	};
+
+	TagEvent.prototype.linkLabel = function () {
+		return 'new tag';
+	};
+
+	TagEvent.prototype.message = function () {
+		return '‣ created tag ' + this.event.payload.ref;
+	};
+
+	TagEvent.prototype.tooltip = function () {
+		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	TagEvent.prototype.combine = function () {
+		return false;
+	};
+
+	TagEvent.prototype.icon = function () {
+		return 'octicon-tag';
+	};
+
+	function BranchEvent(event) {
+		this.event = event;
+
+		this.id = event.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: event.actor.avatar_url
+		};
+		this.date = event.created_at;
+		this.commits = [];
+		this.size = 0;
+		this.branch = event.payload.ref;
+		this.head = null;
+		this.before = null;
+	}
+
+	BranchEvent.prototype.link = function () {
+		// https://github.com/pulseenergy/connector-adapters/tree/connector-adapters_v0.284.0
+		return 'https://github.com/' + this.repo + '/tree/' + this.event.payload.ref;
+	};
+
+	BranchEvent.prototype.linkLabel = function () {
+		return 'new branch';
+	};
+
+	BranchEvent.prototype.message = function () {
+		return '‣ created branch ' + this.event.payload.ref;
+	};
+
+	BranchEvent.prototype.tooltip = function () {
+		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	BranchEvent.prototype.combine = function () {
+		return false;
+	};
+
+	BranchEvent.prototype.icon = function () {
+		return 'octicon-git-branch';
+	};
+
 	function fetchPushes(viewModel) {
 		viewModel.loading(true);
 
@@ -558,6 +643,15 @@ var Panorama = (function () {
 					pushes.push(new PushEvent(event));
 				} else if (event.type === 'CommitCommentEvent') {
 					pushes.push(new CommentEvent(event));
+				} else if (event.type === 'CreateEvent') {
+					if (event.payload.ref_type === 'tag') {
+						// at least for us, tags are very spammy
+						// pushes.push(new TagEvent(event));
+					} else if (event.payload.ref_type === 'branch') {
+						pushes.push(new BranchEvent(event));
+					} else {
+						console.log(event);
+					}
 				}
 			});
 			viewModel.pushes(pushes);
