@@ -65,9 +65,6 @@ app.get('/lanes', checkAuthLogin, function (req, res) {
 });
 
 // api
-app.get('/a/organization/:organization/pushes', checkAuth401, actions.getOrgCommits);
-app.get('/a/user/pushes', checkAuth401, actions.getUserCommits);
-
 app.get('/a/organization/:organization/events', checkAuth401, actions.getOrgEvents);
 app.get('/a/user/events', checkAuth401, actions.getUserEvents);
 

@@ -621,6 +621,48 @@ var Panorama = (function () {
 		return 'octicon-git-branch';
 	};
 
+	function WikiEvent(event) {
+		this.event = event;
+
+		this.id = event.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: event.actor.avatar_url
+		};
+		this.date = event.created_at;
+		this.commits = [];
+		this.size = event.payload.pages.length;
+		this.branch = null;
+		this.head = null;
+		this.before = null;
+	}
+
+	WikiEvent.prototype.link = function () {
+		return this.event.payload.pages[0].html_url;
+	};
+
+	WikiEvent.prototype.linkLabel = function () {
+		return this.event.payload.pages[0].action + ' wiki page';
+	};
+
+	WikiEvent.prototype.message = function () {
+		return '‣ ' + this.event.payload.pages[0].action + ' wiki page ' + this.event.payload.pages[0].title;
+	};
+
+	WikiEvent.prototype.tooltip = function () {
+		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	WikiEvent.prototype.combine = function () {
+		return false;
+	};
+
+	WikiEvent.prototype.icon = function () {
+		return 'octicon-book';
+	};
+
 	function fetchPushes(viewModel) {
 		viewModel.loading(true);
 
@@ -652,6 +694,8 @@ var Panorama = (function () {
 					} else {
 						console.log(event);
 					}
+				} else if (event.type === 'GollumEvent') {
+					pushes.push(new WikiEvent(event));
 				}
 			});
 			viewModel.pushes(pushes);
