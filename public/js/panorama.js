@@ -37,7 +37,7 @@ var Panorama = (function () {
 	}
 
 	function drawLanesSvg(underlay) {
-		var overlap = 0;
+		var overlap = 10;
 
 		underlay.clear();
 
@@ -63,104 +63,25 @@ var Panorama = (function () {
 
 				if (previous) {
 					var pt = previous.offsetTop;
-					var pb = pt + previous.offsetHeight;
+					var ct = current.offsetTop;
 
-					if (c === 1) { // time legends don't take up any visual space, so don't connect to their bottoms
-						pb = pt + 5;
+					var ao = overlap;
+
+					if (c === 1) {
+						ao = 0;
 					}
 
-					var ct = current.offsetTop;
-					var cb = ct + current.offsetHeight;
-
-					if (ct > (pb - overlap)) {
+					if (ct > (pt + ao)) {
 						// bump previous, recursively
-						bump(previous, 'marginTop', ct - pb + overlap);
+						bump(previous, 'marginTop', ct - pt - ao);
 						c -= 2;
-					} else if (cb < (pt + overlap)) {
+					} else if (ct < (pt - ao)) {
 						// bump current, no recursion
-						bump(current, 'marginTop', pt - cb + overlap);
+						bump(current, 'marginTop', pt - ct - ao);
 					}
 				}
 			}
 		});
-
-		// create filled regions
-		if (false) {
-			rows.reduceRight(function (nextRow, row, bucket) {
-				for (var c = 0; c < row.length; c++) {
-					if (nextRow) {
-						var availableBelow = parseInt(nextRow[c].style.marginTop, 10) || 0;
-						if (availableBelow > 0) {
-							nextRow[c].style.marginTop = 0;
-							bump(row[c], 'paddingBottom', availableBelow);
-						}
-					}
-				}
-				return row;
-			}, null);
-		}
-
-		// try to flatten lines
-		if (false) {
-			adjusts = 0;
-			rows.reduceRight(function (nextRow, row, bucket) {
-				for (var c = 0; c < row.length; c++) {
-					if (adjusts++ > 500) {
-						console.log('too many optimisation iterations, aborting');
-						return;
-					}
-
-					var current = row[c];
-					var previous = row[c - 1];
-					var next = row[c + 1];
-
-					// is there space to steal from below
-					var availableAbove = parseInt(current.style.marginTop, 10) || 0;
-					var availableBelow = nextRow ? parseInt(nextRow[c].style.marginTop, 10) || 0 : Infinity;
-
-					var ct = current.offsetTop;
-					var cb = ct + current.offsetHeight;
-					var cm = ct + current.offsetHeight / 2;
-
-					var d = [];
-
-					// constrained by left
-					var lf = Infinity;
-					if (previous) {
-						var pt = previous.offsetTop;
-						var pb = pt + previous.offsetHeight;
-						var pm = pt + previous.offsetHeight / 2;
-						lf = Math.max(0, (pb - overlap) - ct);
-						d.push(pm - cm);
-					}
-
-					// constrained by right
-					var rf = Infinity;
-					if (next) {
-						var nt = next.offsetTop;
-						var nb = nt + next.offsetHeight;
-						var nm = nt + next.offsetHeight / 2;
-						rf = Math.max(0, (nb - overlap) - ct);
-						d.push(nm - cm);
-					}
-
-					var ed = sum(d) / d.length;
-					ed = Math.max(Math.floor(ed), 0);
-					var amt = Math.min(lf, rf, availableBelow, ed);
-//					console.log('::', current, lf, rf, availableBelow, d, ed, '=', amt);
-					if (amt > 5) {
-						bump(current, 'marginTop', amt);
-						if (nextRow) {
-							bump(nextRow[c], 'marginTop', -amt);
-						}
-						if (previous) {
-							c -= 2;
-						}
-					}
-				}
-				return row;
-			}, null);
-		}
 
 		function smooth(els, y1, y2, flat) {
 			var path = [];
@@ -174,7 +95,7 @@ var Panorama = (function () {
 				var c1 = [ne[l] + (ne.xbar - ne[l]) / 2, ne[y]]; // right control point
 				if (ne2 && !flat && sign(e[y] - ne[y]) === sign(ne[y] - ne2[y])) {
 					slope = (e[y] - ne2[y]) / 4;
-					// FIXME magic number: 5 for overlap = 0; 7.5 with overlap = -5
+					// FIXME magic number: 5 for overlap = 10
 					slope = Math.max(-5, Math.min(5, slope));
 					c1[1] += slope / 2;
 				} else {
