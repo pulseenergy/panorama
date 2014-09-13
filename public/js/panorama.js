@@ -470,8 +470,8 @@ var Panorama = (function () {
 	};
 
 	PushEvent.prototype.message = function () {
-		return _.map(_.pluck(this.commits, 'message'), function (msg) {
-			return '‣ ' + msg;
+		return _.map(this.commits, function (commit) {
+			return '‣ ' + commit.message;
 		}).join('\n');
 	};
 
@@ -505,7 +505,6 @@ var Panorama = (function () {
 			image: event.actor.avatar_url
 		};
 		this.date = event.created_at;
-		this.commits = [];
 		this.size = 0;
 		this.branch = null; // ???
 		this.head = event.payload.comment.commit_id;
@@ -547,11 +546,8 @@ var Panorama = (function () {
 			image: event.actor.avatar_url
 		};
 		this.date = event.created_at;
-		this.commits = [];
 		this.size = 0;
 		this.branch = event.payload.ref;
-		this.head = null;
-		this.before = null;
 	}
 
 	TagEvent.prototype.link = function () {
@@ -589,11 +585,8 @@ var Panorama = (function () {
 			image: event.actor.avatar_url
 		};
 		this.date = event.created_at;
-		this.commits = [];
 		this.size = 0;
 		this.branch = event.payload.ref;
-		this.head = null;
-		this.before = null;
 	}
 
 	BranchEvent.prototype.link = function () {
@@ -632,30 +625,35 @@ var Panorama = (function () {
 			image: event.actor.avatar_url
 		};
 		this.date = event.created_at;
-		this.commits = [];
-		this.size = event.payload.pages.length;
-		this.branch = null;
-		this.head = null;
-		this.before = null;
+		this.pages = event.payload.pages;
+		this.size = this.pages.length;
 	}
 
 	WikiEvent.prototype.link = function () {
-		return this.event.payload.pages[0].html_url;
+		return this.pages[0].html_url;
 	};
 
 	WikiEvent.prototype.linkLabel = function () {
-		return this.event.payload.pages[0].action + ' wiki page';
+		return this.pages[0].action + ' wiki page';
 	};
 
 	WikiEvent.prototype.message = function () {
-		return '‣ ' + this.event.payload.pages[0].action + ' wiki page ' + this.event.payload.pages[0].title;
+		return _.map(this.pages, function (page) {
+			return '‣ ' + page.action + ' wiki page ' + page.title;
+		}).join('\n');
 	};
 
 	WikiEvent.prototype.tooltip = function () {
 		return moment(this.date).fromNow() + '\n' + this.message();
 	};
 
-	WikiEvent.prototype.combine = function () {
+	WikiEvent.prototype.combine = function (push) {
+		if (push instanceof WikiEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket) {
+			var combined = new WikiEvent(this.event);
+			combined.pages = combined.pages.concat(push.pages);
+			combined.size = combined.pages.length;
+			return combined;
+		}
 		return false;
 	};
 
