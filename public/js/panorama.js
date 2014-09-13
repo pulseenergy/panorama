@@ -482,6 +482,7 @@ var Panorama = (function () {
 	PushEvent.prototype.combine = function (push) {
 		if (push instanceof PushEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket && push.branch === this.branch) {
 			var combined = new PushEvent(this.event);
+			combined.bucket = this.bucket;
 			combined.commits = combined.commits.concat(push.commits);
 			combined.before = push.before;
 			combined.size = combined.commits.length;
@@ -650,6 +651,7 @@ var Panorama = (function () {
 	WikiEvent.prototype.combine = function (push) {
 		if (push instanceof WikiEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket) {
 			var combined = new WikiEvent(this.event);
+			combined.bucket = this.bucket;
 			combined.pages = combined.pages.concat(push.pages);
 			combined.size = combined.pages.length;
 			return combined;
