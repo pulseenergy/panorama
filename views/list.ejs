@@ -39,8 +39,10 @@
 					</div>
 					<div class="push-commits">
 						<div class="push-commits-intro">
-							<a target="_blank" data-bind="attr: { href: link() }"><span data-bind="text: size + (size === 1 ? ' commit' : ' commits')"></span></a>
-							to <a class="repo-tag filter-repo" data-bind="text: $root.getRepository(repo).simpleName, click: $root.setFilter.bind($root), style: { 'backgroundColor': $root.getRepository(repo).color }"></a> <!-- ko if: branch && branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
+							<a target="_blank" data-bind="attr: { href: link() }"><span data-bind="text: linkLabel()"></span></a>
+							on
+							<a class="repo-tag filter-repo" data-bind="text: $root.getRepository(repo).simpleName, click: $root.setFilter.bind($root), style: { 'backgroundColor': $root.getRepository(repo).color }"></a>
+							<!-- ko if: branch && branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
 						</div>
 						<p class="push-commits-messages" data-bind="text: message()"></p>
 					</div>

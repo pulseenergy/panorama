@@ -116,11 +116,11 @@
 	position: absolute;
 	color: white;
 	text-shadow: 0 0 5px black, 0 0 2px black, 0 0 1px black;
-	font-size: 0.8em;
+	font: 14px/1 octicons;
 }
 .branch {
-	bottom: 3px;
-	right: 3px;
+	bottom: 4px;
+	right: 4px;
 }
 .commit-count {
 	bottom: 3px;

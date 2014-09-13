@@ -465,6 +465,10 @@ var Panorama = (function () {
 		return 'https://github.com/' + this.repo + '/compare/' + this.before + '...' + this.head;
 	};
 
+	PushEvent.prototype.linkLabel = function () {
+		return this.size + (this.size === 1 ? ' commit' : ' commits');
+	};
+
 	PushEvent.prototype.message = function () {
 		return _.map(_.pluck(this.commits, 'message'), function (msg) {
 			return '‣ ' + msg;
@@ -473,6 +477,21 @@ var Panorama = (function () {
 
 	PushEvent.prototype.tooltip = function () {
 		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	PushEvent.prototype.combine = function (push) {
+		if (push instanceof PushEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket && push.branch === this.branch) {
+			var combined = new PushEvent(this.event);
+			combined.commits = combined.commits.concat(push.commits);
+			combined.before = push.before;
+			combined.size = combined.commits.length;
+			return combined;
+		}
+		return false;
+	};
+
+	PushEvent.prototype.icon = function () {
+		return this.branch && this.branch !== 'master' && 'octicon-git-branch';
 	};
 
 	function CommentEvent(event) {
@@ -497,12 +516,24 @@ var Panorama = (function () {
 		return this.event.payload.comment.html_url;
 	};
 
+	CommentEvent.prototype.linkLabel = function () {
+		return '1 comment';
+	};
+
 	CommentEvent.prototype.message = function () {
 		return '‣ ' + this.event.payload.comment.body;
 	};
 
 	CommentEvent.prototype.tooltip = function () {
 		return moment(this.date).fromNow() + '\n' + this.message();
+	};
+
+	CommentEvent.prototype.combine = function () {
+		return false;
+	};
+
+	CommentEvent.prototype.icon = function () {
+		return 'octicon-comment';
 	};
 
 	function fetchPushes(viewModel) {
@@ -540,13 +571,10 @@ var Panorama = (function () {
 		var compressed = [];
 		_.each(pushes, function (push) {
 			var last = _.last(compressed);
-			if (last && push.repo === last.repo && push.user.login === last.user.login && push.bucket === last.bucket && push.branch === last.branch) {
-				var combined = _.clone(last);
-				combined.commits = last.commits.concat(push.commits);
-				combined.before = push.before;
-				combined.size = combined.commits.length;
+			var together = last && last.combine(push);
+			if (together) {
 				compressed.pop();
-				compressed.push(combined);
+				compressed.push(together);
 			} else {
 				compressed.push(push);
 			}

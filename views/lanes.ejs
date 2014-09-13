@@ -5,6 +5,7 @@
 <title>panorama</title>
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="stylesheet" href="css/hint.css">
+<link rel="stylesheet" href="css/octicons.css"/>
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/lanes.css">
 
@@ -47,8 +48,8 @@
 							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: link(),
 									'data-hint': tooltip() }, css: { 'hint--top-left': $parentContext.$parentContext.$index() > $root.repos().length / 2 }">
 								<img width="50" height="50" data-bind="attr: { src: user.image + 's=50', alt: user.login }">
-								<span class="commit-count push-info" data-bind="text: size"></span>
-								<span class="branch push-info" data-bind="visible: branch && branch !== 'master'">Ͱ</span>
+								<span class="commit-count push-info" data-bind="visible: size > 0, text: size"></span>
+								<span class="branch push-info octicon" data-bind="visible: icon(), css: icon()"></span>
 							</a>
 						</li>
 					</ul>
