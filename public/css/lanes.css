@@ -40,6 +40,7 @@
 }
 
 .push:hover img {
+	border-radius: 12px;
 	border-width: 2px;
 	border-style: solid;
 	margin: -2px;
