@@ -158,7 +158,10 @@ var Panorama = (function () {
 //		});
 
 		rows.forEach(function (row, bucket) {
-			underlay.path(smooth(points(row, -1), 'ymin', null, false))
+			underlay.path(smooth(points(row, -1).map(function (p) {
+				p.ymin += 1;
+				return p;
+			}), 'ymin', null, false))
 				.fill('none').stroke({width: '2px', color: colors[bucket % colors.length]});
 		});
 	}
