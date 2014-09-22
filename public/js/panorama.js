@@ -400,7 +400,11 @@ var Panorama = (function () {
 	};
 
 	PushEvent.prototype.tooltip = function () {
-		return moment(this.date).fromNow() + '\n' + this.message();
+		var text = moment(this.date).fromNow();
+		if (this.branch && this.branch !== 'master') {
+			text += ' on ' + this.branch;
+		}
+		return text + '\n' + this.message();
 	};
 
 	PushEvent.prototype.combine = function (push) {
@@ -449,7 +453,11 @@ var Panorama = (function () {
 	};
 
 	CommentEvent.prototype.tooltip = function () {
-		return moment(this.date).fromNow() + '\n' + this.message();
+		var text = moment(this.date).fromNow();
+		if (this.branch && this.branch !== 'master') {
+			text += ' on ' + this.branch;
+		}
+		return text + '\n' + this.message();
 	};
 
 	CommentEvent.prototype.combine = function () {
