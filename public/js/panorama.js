@@ -25,17 +25,6 @@ var Panorama = (function () {
 		return n > 0 ? 1 : -1;
 	}
 
-	function bump(node, property, amount) {
-		var previous = parseInt(window.getComputedStyle(node)[property], 10) || 0;
-		node.style[property] = previous + amount + 'px';
-	}
-
-	function sum(arr) {
-		return arr.reduce(function (a, b) {
-			return a + b;
-		});
-	}
-
 	function drawLanesSvg(underlay) {
 		var overlap = 10;
 
@@ -49,9 +38,29 @@ var Panorama = (function () {
 			rows.push(row);
 		}
 
-		var adjusts = 0;
+		var shadow = [];
 		rows.forEach(function (row, bucket) {
-			// TODO do all the math in memory, then dump it into the DOM when finished
+			shadow[bucket] = [];
+			for (var c = 0; c < row.length; c++) {
+				var node = row[c];
+				shadow[bucket][c] = { node: node, offsetTop: node.offsetTop, marginTop: 0 };
+				if (bucket > 0) {
+					shadow[bucket - 1][c].next = shadow[bucket][c];
+				}
+			}
+		});
+
+		function bump(s, amount) {
+			s.marginTop += amount;
+			s.offsetTop += amount;
+			while (s.next) {
+				s.next.offsetTop += amount;
+				s = s.next;
+			}
+		}
+
+		var adjusts = 0;
+		shadow.forEach(function (row, bucket) {
 			for (var c = 0; c < row.length; c++) {
 				if (adjusts++ > 5000) {
 					console.log('too many layout iterations, aborting');
@@ -73,14 +82,17 @@ var Panorama = (function () {
 
 					if (ct > (pt + ao)) {
 						// bump previous, recursively
-						bump(previous, 'marginTop', ct - pt - ao);
+						bump(previous, ct - pt - ao);
 						c -= 2;
 					} else if (ct < (pt - ao)) {
 						// bump current, no recursion
-						bump(current, 'marginTop', pt - ct - ao);
+						bump(current, pt - ct - ao);
 					}
 				}
 			}
+			row.forEach(function (s) {
+				s.node.style.marginTop = s.marginTop + 'px';
+			});
 		});
 
 		function smooth(els, y1, y2, flat) {
