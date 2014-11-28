@@ -32,7 +32,7 @@
 				<li class="push">
 					<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
 					<div class="push-user-container">
-						<img class="push-user filter-user" data-bind="attr: { src: user.image, alt: user.login, title: user.login }, click: $root.setFilter.bind($root)">
+						<img class="push-user filter-user" data-bind="attr: { src: user.image + 's=100', alt: user.login }, click: $root.setFilter.bind($root)">
 					</div>
 					<div class="push-commits">
 						<div class="push-commits-intro">
