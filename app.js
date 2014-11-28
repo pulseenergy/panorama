@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
 	if (!req.user) {
 		res.render('login');
 	} else {
-		res.redirect('/list');
+		res.redirect('/lanes');
 	}
 });
 
