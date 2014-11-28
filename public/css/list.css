@@ -17,10 +17,12 @@
 }
 .push {
 	padding: 10px;
-	border-bottom: 1px solid #ddd;
 	display: flex;
 	align-items: flex-start;
 	clear: both;
+}
+.push + .push {
+	border-top: 1px solid #ddd;
 }
 
 .push-commits {

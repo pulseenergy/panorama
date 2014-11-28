@@ -17,6 +17,12 @@
 	bottom: 0;
 	left: 0;
 	z-index: -10;
+	overflow: hidden;
+}
+
+/* svg.js leaves this behind (why?) */
+body > svg:last-child {
+	display: none;
 }
 
 .push {

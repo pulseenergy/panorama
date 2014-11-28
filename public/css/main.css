@@ -1,8 +1,5 @@
 body {
-	position: relative;
 	margin: 0;
-}
-.container {
 }
 .main-header {
 	display: flex;
