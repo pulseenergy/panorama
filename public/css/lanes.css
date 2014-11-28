@@ -4,10 +4,11 @@
 	white-space: nowrap;
 }
 
-.lane-wrapper {
+.inner-lane-wrapper {
 	position: relative;
 	display: flex;
 	align-items: stretch;
+	float: left;
 }
 
 #underlay {

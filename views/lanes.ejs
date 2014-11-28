@@ -27,7 +27,7 @@
 	<p class="loading" data-bind="visible: loading">loading...</p>
 	<div id="body">
 		<div id="content">
-			<div class="lane-wrapper">
+			<div class="outer-lane-wrapper"><div class="inner-lane-wrapper">
 				<div class="repo time">
 					<h3 class="repo-name" data-bind="visible: $root.buckets().length > 0">&nbsp;</h3>
 					<!-- ko foreach: { data: $root.bucketLabels } -->
@@ -54,7 +54,7 @@
 					<!-- /ko -->
 				</div><!-- /ko -->
 				<div id="underlay"></div>
-			</div>
+			</div></div>
 		</div>
 	</div>
 </body>
