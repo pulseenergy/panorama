@@ -6,6 +6,8 @@
 
 .lane-wrapper {
 	position: relative;
+	display: flex;
+	align-items: stretch;
 }
 
 #underlay {
@@ -47,10 +49,8 @@
 }
 
 .repo {
-	display: inline-block;
-	vertical-align: top;
 	padding: 0 0 50px 0;
-	height: 100%;
+	flex-shrink: 0;
 }
 .repo:nth-child(even) {
 	background-color: rgba(0,0,0,0.075);
