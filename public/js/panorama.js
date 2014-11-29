@@ -52,9 +52,8 @@ var Panorama = (function () {
 
 		function bump(s, amount) {
 			s.marginTop += amount;
-			s.offsetTop += amount;
-			while (s.next) {
-				s.next.offsetTop += amount;
+			while (s) {
+				s.offsetTop += amount;
 				s = s.next;
 			}
 		}
