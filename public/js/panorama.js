@@ -571,6 +571,7 @@ var Panorama = (function () {
 		this.date = event.created_at;
 		this.pages = event.payload.pages;
 		this.size = this.pages.length;
+		this.branch = null; // ???
 	}
 
 	WikiEvent.prototype.link = function () {
