@@ -344,12 +344,12 @@ var Panorama = (function () {
 			this.filter(function (push) { return push.repo === parsed.repo; });
 		}
 	};
-	Panorama.prototype.init = function (view) {
+	Panorama.prototype.init = function () {
 		var underlay = document.getElementById('underlay');
 		if (underlay) {
 			this.underlay = SVG(underlay);
 		}
-		this.view(view);
+		this.view(location.pathname.substring(1));
 		fetchPushes(this);
 		this.organization.subscribe(fetchPushes.bind(null, this));
 		this.view.subscribe(function (view) {

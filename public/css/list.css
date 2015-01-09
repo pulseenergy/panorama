@@ -1,45 +1,44 @@
-#body {
+.content-list {
 	display: flex;
 	justify-content: center;
 }
-
-#content {
+.content-list .outer-list-wrapper {
 	width: 800px;
 }
-#content a:visited {
+.content-list a:visited {
 	color: black;
 }
 
-.pushes {
+.content-list .pushes {
 	width: 100%;
 	list-style-type: none;
 	padding: 0;
 }
-.push {
+.content-list .push {
 	padding: 10px;
 	display: flex;
 	align-items: flex-start;
 	clear: both;
 }
-.push + .push {
+.content-list .push + .push {
 	border-top: 1px solid #ddd;
 }
 
-.push-commits {
+.content-list .push-commits {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 }
-.push-commits-messages {
+.content-list .push-commits-messages {
 	margin: 0;
 	white-space: pre-line;
 }
-.push-commits-intro {
+.content-list .push-commits-intro {
 	font-size: 80%;
 	margin-bottom: 5px;
 }
 
-.repo-tag {
+.content-list .repo-tag {
 	cursor: pointer;
 	background: #999; /* default only */
 	color: white;
@@ -48,12 +47,12 @@
 	font-size: 90%;
 }
 
-.push-user-container {
+.content-list .push-user-container {
 	margin-right: 10px;
 	vertical-align: top;
 }
 
-.push-user {
+.content-list .push-user {
 	line-height: 0;
 	display: block;
 	border-radius: 10px;
@@ -62,7 +61,7 @@
 	cursor: pointer;
 }
 
-.push-time {
+.content-list .push-time {
 	color: #999;
 	font-size: 80%;
 	order: 1;

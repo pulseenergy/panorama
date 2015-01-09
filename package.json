@@ -27,7 +27,8 @@
     "everyauth": "~0.4.5",
     "express": "^3.19.0",
     "request": "^2.51.0",
-    "underscore": "~1.6.0"
+    "underscore": "~1.6.0",
+    "ejs-locals": "^1.0.2"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

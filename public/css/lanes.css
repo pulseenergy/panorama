@@ -1,10 +1,10 @@
-#content {
+.content-lanes {
 	display: flex;
 	justify-content: center;
 	white-space: nowrap;
 }
 
-.inner-lane-wrapper {
+.content-lanes .inner-lane-wrapper {
 	position: relative;
 	display: flex;
 	align-items: stretch;
@@ -26,29 +26,23 @@ body > svg:last-child {
 	display: none;
 }
 
-.push {
-
-}
-.push + .push {
+.content-lanes .push + .push {
 	margin-top: 5px;
 }
-.push:hover {
-
-}
-.push img {
+.content-lanes .push img {
 	width: 50px;
 	border-radius: 10px;
 	border-color: crimson;
 	vertical-align: bottom;
 }
-.push a:visited img {
+.content-lanes .push a:visited img {
 	border-color: white;
 }
-.time .push {
+.content-lanes .time .push {
 	font-size: smaller;
 }
 
-.push:hover img {
+.content-lanes .push:hover img {
 	border-radius: 12px;
 	border-width: 2px;
 	border-style: solid;

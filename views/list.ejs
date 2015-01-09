@@ -1,30 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<title>panorama</title>
-<link rel="shortcut icon" href="favicon.ico">
-<link rel="stylesheet" href="css/hint.css">
-<link rel="stylesheet" href="css/main.css">
-<link rel="stylesheet" href="css/list.css">
+<% layout('include/layout') -%>
 
-<script src="js/reqwest.min.js" type="text/javascript"></script>
-<script src="js/knockout.min.js" type="text/javascript"></script>
-<script src="js/underscore.min.js" type="text/javascript"></script>
-<script src="js/moment.min.js" type="text/javascript"></script>
-<script src="js/panorama.js" type="text/javascript"></script>
-<script>
-	var panorama = new Panorama(<%- JSON.stringify(user ? user.organizations : [{ login: 'pulseenergy' }]) %>);
-	window.onload = function () {
-		panorama.init('list');
-	};
-</script>
-</head>
-<body>
-	<% include include/header %>
-	<p class="loading" data-bind="visible: loading">loading...</p>
-	<div id="body">
-		<div id="content" style="display: none;" data-bind="visible: true">
+<div id="body">
+	<div id="content" class="content-list" style="display: none;" data-bind="visible: true">
+		<div class="outer-list-wrapper">
 			<nav data-bind="visible: filter">
 				<button data-bind="click: setFilter">Clear filter</button>
 			</nav>
@@ -47,5 +25,4 @@
 			</ul>
 		</div>
 	</div>
-</body>
-</html>
+</div>

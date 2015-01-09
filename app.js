@@ -1,10 +1,12 @@
 var express = require('express');
+var engine = require('ejs-locals');
 var request = require('request');
 var githubApi = require('./lib/githubApi');
 var actions = require('./lib/actions');
 
 var app = express();
 
+app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
 app.use(express.compress());
