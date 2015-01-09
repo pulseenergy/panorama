@@ -4,6 +4,10 @@
 }
 .content-list .outer-list-wrapper {
 	width: 800px;
+	background: white;
+	padding: 10px;
+	margin-top: 20px;
+	border-radius: 10px;
 }
 .content-list a:visited {
 	color: black;
@@ -67,3 +71,6 @@
 	order: 1;
 }
 
+.content-list .list-nav {
+	padding: 10px;
+}

@@ -3,20 +3,21 @@
 <div id="body">
 	<div id="content" class="content-list" style="display: none;" data-bind="visible: true">
 		<div class="outer-list-wrapper">
-			<nav data-bind="visible: filter">
+			<p class="loading" data-bind="visible: loading">loading...</p>
+			<nav data-bind="visible: filter" class="list-nav">
 				<button data-bind="click: setFilter">Clear filter</button>
 			</nav>
 			<ul class="pushes" data-bind="foreach: filteredPushes">
 				<li class="push">
 					<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
 					<div class="push-user-container">
-						<img class="push-user filter-user" data-bind="attr: { src: user.image + 's=100', alt: user.login }, click: $root.setFilter.bind($root)">
+						<img class="push-user filter-user" data-bind="attr: { src: user.image + 's=100', alt: user.login, title: 'View only activity from ' + user.login }, click: $root.setFilter.bind($root)">
 					</div>
 					<div class="push-commits">
 						<div class="push-commits-intro">
 							<a target="_blank" data-bind="attr: { href: link() }"><span data-bind="text: linkLabel()"></span></a>
 							on
-							<a class="repo-tag filter-repo" data-bind="text: $root.getRepository(repo).simpleName, click: $root.setFilter.bind($root), style: { 'backgroundColor': $root.getRepository(repo).color }"></a>
+							<a class="repo-tag filter-repo" data-bind="text: $root.getRepository(repo).simpleName, click: $root.setFilter.bind($root), style: { 'backgroundColor': $root.getRepository(repo).color }, attr: { title: 'View only activity in ' + $root.getRepository(repo).simpleName }"></a>
 							<!-- ko if: branch && branch !== 'master' -->(<span data-bind="text: branch"></span>)<!-- /ko -->
 						</div>
 						<p class="push-commits-messages" data-bind="text: message()"></p>
