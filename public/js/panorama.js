@@ -184,9 +184,15 @@ var Panorama = (function () {
 		this.loading = ko.observable(false);
 		this.pushes = ko.observableArray();
 		this.filter = ko.observable();
+
+		var underlay = {};
 		this.adjustAllLanes = _.debounce(function () {
-			drawLanesSvg(this.underlay);
-		}.bind(this), 100);
+			var element = document.getElementById('underlay');
+			if (element !== underlay.element) {
+				underlay = { element: element, svg: SVG(element) };
+			}
+			drawLanesSvg(underlay.svg);
+		}, 100);
 		this.repos = ko.computed({
 			read: function() {
 				var org = this.organization();
@@ -342,10 +348,6 @@ var Panorama = (function () {
 		}
 	};
 	Panorama.prototype.init = function () {
-		var underlay = document.getElementById('underlay');
-		if (underlay) {
-			this.underlay = SVG(underlay);
-		}
 		this.view(window.location.pathname.substring(1));
 		fetchPushes(this);
 		this.organization.subscribe(fetchPushes.bind(null, this));
