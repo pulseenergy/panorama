@@ -415,6 +415,7 @@ var Panorama = (function () {
 		if (this.branch && this.branch !== 'master') {
 			text += ' on ' + this.branch;
 		}
+		text += ' by ' + this.user.login;
 		return text + '\n' + this.message();
 	};
 
