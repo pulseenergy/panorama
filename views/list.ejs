@@ -1,9 +1,9 @@
 <% layout('include/layout') -%>
 
+<p class="loading" data-bind="visible: loading">loading...</p>
 <div id="body">
-	<div id="content" class="content-list" style="display: none;" data-bind="visible: true">
+	<div id="content" class="content-list" style="display: none;" data-bind="visible: !loading()">
 		<div class="outer-list-wrapper">
-			<p class="loading" data-bind="visible: loading">loading...</p>
 			<nav data-bind="visible: filter" class="list-nav">
 				<button data-bind="click: setFilter">Clear filter</button>
 			</nav>

@@ -616,6 +616,7 @@ var Panorama = (function () {
 	};
 
 	function fetchPushes(viewModel) {
+		viewModel.pushes([]);
 		viewModel.loading(true);
 
 		var org = viewModel.organization();
