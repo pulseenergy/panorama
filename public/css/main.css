@@ -4,11 +4,11 @@ body {
 .main-header {
 	display: flex;
 	justify-content: center;
-	border-bottom: 1px solid #ddd;
+	z-index: 100;
+	border-bottom: 2px solid rgba(100,100,100,0.2);
 	padding: 20px 0;
 	position: relative;
-	background-color: white;
-	z-index: 100;
+	background-color: rgba(255,255,255,0.3);
 }
 .current-view {
 	position: absolute;
@@ -55,4 +55,13 @@ body {
 }
 .loading, .login-prompt {
 	text-align: center;
+}
+.fixed-bg {
+	position: fixed;
+	background-image: url(https://unsplash.imgix.net/photo-1414446483597-8d8f792bfe39?q=75&fm=jpg&s=2756ab87b786786b9e689b6204d99c90);
+	z-index: -100;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	opacity: 0.7;
 }
