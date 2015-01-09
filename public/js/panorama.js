@@ -315,33 +315,30 @@ var Panorama = (function () {
 	Panorama.prototype.getPushTime = function (push) {
 		return this.formatTimeAgo(push.date);
 	};
-	Panorama.prototype.setFilter = function (data, event) {
-		if (this.view() === 'lanes') {
-			window.location = './list?repo=' + data.repo.name;
-			return;
-		}
-
-		if (event.target.classList.contains('filter-repo')) {
-			history.pushState(null, null, '?repo=' + data.repo);
-			this.filter(function (push) { return push.repo === data.repo; });
-		} else if (event.target.classList.contains('filter-user')) {
-			history.pushState(null, null, '?user=' + data.user.login);
-			this.filter(function (push) { return push.user.login === data.user.login; });
+	Panorama.prototype.setFilter = function (type, value) {
+		console.log('setFilter', type, value);
+		if (type == 'repo' && value) {
+			history.pushState(null, null, '/list?repo=' + value);
+			this.filter(function (push) { return push.repo === value; });
+		} else if (type == 'user' && value) {
+			history.pushState(null, null, '/list?user=' + value);
+			this.filter(function (push) { return push.user.login === value; });
 		} else {
 			history.pushState(null, null, '/list');
 			this.filter(null);
 		}
+		this.view('list');
 	};
 	Panorama.prototype.applyWindowLocation = function () {
-		var parsed = parseLocationSearch();
-		if (_.isEmpty(parsed)) {
-			return this.filter(null);
-		}
+		this.view(window.location.pathname.substring(1));
+		var search = parseLocationSearch();
 		// TODO: could make these additive, but is that intuitive?
-		if (parsed.user) {
-			this.filter(function (push) { return push.user.login === parsed.user; });
-		} else if (parsed.repo) {
-			this.filter(function (push) { return push.repo === parsed.repo; });
+		if (search && search.user) {
+			this.filter(function (push) { return push.user.login === search.user; });
+		} else if (search && search.repo) {
+			this.filter(function (push) { return push.repo === search.repo; });
+		} else {
+			this.filter();
 		}
 	};
 	Panorama.prototype.init = function () {
@@ -349,11 +346,14 @@ var Panorama = (function () {
 		if (underlay) {
 			this.underlay = SVG(underlay);
 		}
-		this.view(location.pathname.substring(1));
+		this.view(window.location.pathname.substring(1));
 		fetchPushes(this);
 		this.organization.subscribe(fetchPushes.bind(null, this));
 		this.view.subscribe(function (view) {
-			window.location = './' + view;
+			var pathname = '/' + view;
+			if (window.location.pathname.indexOf(pathname) !== 0) {
+				history.pushState(null, null, pathname);
+			}
 		});
 		ko.applyBindings(this);
 

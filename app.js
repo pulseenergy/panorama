@@ -60,7 +60,7 @@ app.get('/list', loadUserOrganizations, function (req, res) {
 	res.render('list');
 });
 app.get('/lanes', loadUserOrganizations, function (req, res) {
-	res.render('lanes');
+	res.render('list');
 });
 
 // api
