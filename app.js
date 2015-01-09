@@ -7,7 +7,9 @@ var app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(express.bodyParser());
+app.use(express.compress());
+app.use(express.json());
+app.use(express.urlencoded());
 app.use(express.cookieParser());
 app.use(express.session({ secret: 'f8fb234f3cf333241e3f7c74' }));
 
