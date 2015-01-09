@@ -32,42 +32,37 @@ app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
-	if (!req.user) {
-		res.render('login');
-	} else {
-		res.redirect('/lanes');
-	}
+	res.redirect('/lanes');
 });
 
-function checkAuthLogin(req, res, next) {
-	if (!req.user) {
-		return res.redirect('/');
-	}
-	if (!req.user.organizations) {
-		return request(githubApi.organizations(req.user, req.session.authToken), function (err, response, body) {
+function loadUserOrganizations(req, res, next) {
+	if (req.user && !req.user.organizations) {
+		request(githubApi.organizations(req.user, req.session.authToken), function (err, response, body) {
 			req.user.organizations = body;
 			next();
 		});
+	} else {
+		next();
 	}
-	next();
 }
 
 function checkAuth401(req, res, next) {
 	if (!req.user) {
-		return res.send(401);
+		res.send(401);
+	} else {
+		next();
 	}
-	next();
 }
 
-app.get('/list', checkAuthLogin, function (req, res) {
+app.get('/list', loadUserOrganizations, function (req, res) {
 	res.render('list');
 });
-app.get('/lanes', checkAuthLogin, function (req, res) {
+app.get('/lanes', loadUserOrganizations, function (req, res) {
 	res.render('lanes');
 });
 
 // api
-app.get('/a/organization/:organization/events', checkAuth401, actions.getOrgEvents);
+app.get('/a/organization/:organization/events', actions.getOrgEvents);
 app.get('/a/user/events', checkAuth401, actions.getUserEvents);
 
 app.use(function handleError(err, req, res, next) {
