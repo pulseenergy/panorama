@@ -469,6 +469,7 @@ var Panorama = (function () {
 		if (this.branch && this.branch !== 'master') {
 			text += ' on ' + this.branch;
 		}
+		text += ' by ' + this.user.login;
 		return text + '\n' + this.message();
 	};
 
@@ -508,7 +509,9 @@ var Panorama = (function () {
 	};
 
 	TagEvent.prototype.tooltip = function () {
-		return moment(this.date).fromNow() + '\n' + this.message();
+		var text = moment(this.date).fromNow();
+		text += ' by ' + this.user.login;
+		return text + '\n' + this.message();
 	};
 
 	TagEvent.prototype.combine = function () {
@@ -548,7 +551,9 @@ var Panorama = (function () {
 	};
 
 	BranchEvent.prototype.tooltip = function () {
-		return moment(this.date).fromNow() + '\n' + this.message();
+		var text = moment(this.date).fromNow();
+		text += ' by ' + this.user.login;
+		return text + '\n' + this.message();
 	};
 
 	BranchEvent.prototype.combine = function () {
@@ -590,7 +595,9 @@ var Panorama = (function () {
 	};
 
 	WikiEvent.prototype.tooltip = function () {
-		return moment(this.date).fromNow() + '\n' + this.message();
+		var text = moment(this.date).fromNow();
+		text += ' by ' + this.user.login;
+		return text + '\n' + this.message();
 	};
 
 	WikiEvent.prototype.combine = function (push) {
