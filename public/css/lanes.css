@@ -40,7 +40,7 @@ body > svg:last-child {
 .repo {
 	padding: 0 0 50px 0;
 	flex-shrink: 0;
-	margin-top: 169px;
+	margin-top: 170px;
 }
 
 .repo:nth-child(even) {
@@ -53,17 +53,17 @@ body > svg:last-child {
 
 .repo-name {
 	-webkit-transform: rotate(-45deg);
-	-webkit-transform-origin: 25px 50%;
+	-webkit-transform-origin: 50% 50%;
 	transform: rotate(-45deg);
-	transform-origin: 25px 50%;
+	transform-origin: 50% 50%;
 	padding-left: 25px;
-	margin: 150px 0 0;
 	width: 0;
 	white-space: nowrap;
 	cursor: pointer;
 	font-weight: normal;
 	font-size: 1em;
-	margin-top: -20px;
+	margin: 0 0 0;
+	line-height: 0;
 }
 .time .repo-name {
 	-webkit-transform: none;
