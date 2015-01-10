@@ -31,9 +31,10 @@ body > svg:last-child {
 }
 .content-lanes .push img {
 	width: 50px;
-	border-radius: 10px;
-	border-color: crimson;
+	border-radius: 50% / 5px;
+	border-width: 2px;
 	vertical-align: bottom;
+	border-color: rgba(255,255,255,0);
 }
 .content-lanes .push a:visited img {
 	border-color: white;
@@ -43,29 +44,36 @@ body > svg:last-child {
 }
 
 .content-lanes .push:hover img {
-	border-radius: 12px;
-	border-width: 2px;
-	border-style: solid;
-	margin: -2px;
+	border-color: rgba(255,255,255,0.2);
 }
 
 .repo {
 	padding: 0 0 50px 0;
 	flex-shrink: 0;
+	margin-top: 169px;
 }
+
 .repo:nth-child(even) {
-	background-color: rgba(0,0,0,0.075);
+	background-color: rgba(0,0,0,0.03);
 }
+
+.repo + .repo:nth-child(odd) {
+	background-color: rgba(255,255,255,0.03);
+}
+
 .repo-name {
-	-webkit-transform: rotate(-90deg);
+	-webkit-transform: rotate(-45deg);
 	-webkit-transform-origin: 25px 50%;
-	transform: rotate(-90deg);
+	transform: rotate(-45deg);
 	transform-origin: 25px 50%;
 	padding-left: 25px;
 	margin: 150px 0 0;
 	width: 0;
 	white-space: nowrap;
 	cursor: pointer;
+	font-weight: normal;
+	font-size: 1em;
+	margin-top: -20px;
 }
 .time .repo-name {
 	-webkit-transform: none;

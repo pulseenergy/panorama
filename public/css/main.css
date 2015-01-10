@@ -3,6 +3,8 @@ body {
 	display: flex;
 	min-height: 100vh;
 	flex-direction: column;
+	font-family: Arial, sans-serif;
+	font-size: 0.875em;
 }
 #body {
 	flex: 1;
@@ -64,6 +66,9 @@ body {
 	margin: 0;
 	letter-spacing: 5px;
 	line-height: 1em;
+}
+.app-logo {
+	height: 20px;
 }
 .subtitle {
 	margin: 0 0 0 10px;
