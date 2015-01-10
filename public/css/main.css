@@ -1,8 +1,11 @@
 body {
 	margin: 0;
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 }
 #body {
-	min-height: 100vh;
+	flex: 1;
 }
 .main-header {
 	display: flex;
