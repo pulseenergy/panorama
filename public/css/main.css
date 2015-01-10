@@ -89,3 +89,13 @@ body {
 	background-size: cover;
 	opacity: 0.7;
 }
+.tubular {
+	border-radius: 5px/50%;
+	overflow: hidden;
+	display: inline-block;
+	vertical-align: bottom;
+}
+.tubular > img {
+	border-radius: 50%/5px;
+	vertical-align: bottom;
+}

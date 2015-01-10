@@ -11,7 +11,7 @@
 			<ul class="pushes" data-bind="foreach: filteredPushes">
 				<li class="push">
 					<time class="push-time" data-bind="text: $root.getPushTime($data)"></time>
-					<div class="push-user-container">
+					<div class="push-user-container tubular">
 						<img class="push-user filter-user" data-bind="attr: { src: user.image + 's=100', alt: user.login, title: 'View only activity from ' + user.login }, click: $root.setFilter.bind($root, 'user', user.login)">
 					</div>
 					<div class="push-commits">
@@ -46,7 +46,9 @@
 					<li class="push">
 						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: link(),
 							'data-hint': tooltip() }, css: { 'hint--top-left': $parentContext.$parentContext.$index() >= $root.repos().length / 2 }">
-							<img width="50" height="50" data-bind="attr: { src: user.image + 's=100', alt: user.login }">
+							<span class="tubular">
+								<img width="50" height="50" data-bind="attr: { src: user.image + 's=100', alt: user.login }">
+							</span>
 							<span class="commit-count push-info" data-bind="visible: size > 0, text: size"></span>
 							<span class="branch push-info octicon" data-bind="visible: icon(), css: icon()"></span>
 						</a>
