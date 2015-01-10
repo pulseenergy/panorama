@@ -3,7 +3,7 @@
 	<% if (everyauth.loggedIn) { %>
 	<aside class="current-user">
 		<div class="current-user-name">Hello, <strong><%= user.login %></strong></div>
-		<div class="current-user-avatar"><a href="<%= user.html_url %>"><img class="user-avatar" src="<%= user.avatar_url %>"></a></div>
+		<div class="current-user-avatar"><a class="tubular" href="<%= user.html_url %>"><img class="user-avatar" src="<%= user.avatar_url %>"></a></div>
 	</aside>
 	<% } else { %>
 	<aside class="current-user">

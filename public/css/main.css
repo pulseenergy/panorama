@@ -52,13 +52,8 @@ body {
 .current-user-name {
 	white-space: nowrap;
 }
-.current-user-avatar {
-	width: 40px;
-}
 .current-user-avatar img {
-	width: 100%;
-	border-radius: 10px 10px;
-	vertical-align: bottom;
+	width: 40px;
 }
 .app-name {
 	margin: 0;
