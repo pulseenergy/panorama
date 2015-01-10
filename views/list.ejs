@@ -28,35 +28,45 @@
 		</div>
 	</div>
 	<div class="content-lanes" style="display: none" data-bind="visible: !loading(), if: 'lanes' == view()">
-		<div class="outer-lane-wrapper"><div class="inner-lane-wrapper">
-			<div class="repo time">
-				<h3 class="repo-name" data-bind="visible: $root.buckets().length > 0">&nbsp;</h3>
-				<!-- ko foreach: { data: $root.bucketLabels } -->
-				<ul class="pushes" data-bind="css: 'bucket-' + $index()">
-					<li class="push">
-						<span data-bind="text: $data"></span>
-					</li>
-				</ul>
+		<div class="outer-lane-wrapper">
+			<div class="repo-headings">
+				<div class="repo-heading repo-heading-dummy" data-bind="visible: $root.buckets().length > 0">&nbsp;</div>
+				<!-- ko foreach: bucketedPushesByRepo -->
+				<div class="repo-heading">
+					<h3 class="repo-name" data-bind="text: repo.simpleName, click: $root.setFilter.bind($root)"></h3>
+				</div>
 				<!-- /ko -->
 			</div>
-			<!-- ko foreach: bucketedPushesByRepo --><div class="repo">
-				<h3 class="repo-name filter-repo" data-bind="text: repo.simpleName, click: $root.setFilter.bind($root, 'repo', repo.name)"></h3>
-				<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
-				<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
-					<li class="push">
-						<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: link(),
-							'data-hint': tooltip() }, css: { 'hint--top-left': $parentContext.$parentContext.$index() >= $root.repos().length / 2 }">
-							<span class="tubular">
-								<img width="50" height="50" data-bind="attr: { src: user.image + 's=100', alt: user.login }">
-							</span>
-							<span class="commit-count push-info" data-bind="visible: size > 0, text: size"></span>
-							<span class="branch push-info octicon" data-bind="visible: icon(), css: icon()"></span>
-						</a>
-					</li>
-				</ul>
+			<div class="inner-lane-wrapper">
+				<div class="repo time">
+					<!-- ko foreach: { data: $root.bucketLabels } -->
+					<ul class="pushes" data-bind="css: 'bucket-' + $index()">
+						<li class="push">
+							<span data-bind="text: $data"></span>
+						</li>
+					</ul>
+					<!-- /ko -->
+				</div>
+				<!-- ko foreach: bucketedPushesByRepo -->
+				<div class="repo">
+					<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
+					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
+						<li class="push">
+							<a class="hint--top hint--info" target="_blank" data-bind="attr: { href: link(),
+								'data-hint': tooltip() }, css: { 'hint--top-left': $parentContext.$parentContext.$index() >= $root.repos().length / 2 }">
+								<span class="tubular">
+									<img width="50" height="50" data-bind="attr: { src: user.image + 's=100', alt: user.login }">
+								</span>
+								<span class="commit-count push-info" data-bind="visible: size > 0, text: size"></span>
+								<span class="branch push-info octicon" data-bind="visible: icon(), css: icon()"></span>
+							</a>
+						</li>
+					</ul>
+					<!-- /ko -->
+				</div>
 				<!-- /ko -->
-			</div><!-- /ko -->
-			<div id="underlay"></div>
-		</div></div>
+				<div id="underlay"></div>
+			</div>
+		</div>
 	</div>
 </div>

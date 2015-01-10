@@ -26,6 +26,33 @@ body > svg:last-child {
 	display: none;
 }
 
+.content-lanes .repo-headings {
+	display: flex;
+}
+.content-lanes .time,
+.repo-headings .repo-heading:first-child {
+	flex-basis: 90px; /* ugh magic */
+}
+.repo-headings .repo-heading {
+	flex-basis: 60px; /* match lanes: 50px + 10px padding */
+	flex-shrink: 0;
+	overflow: hidden; /* long repo names do not encroach */
+}
+.repo-headings .repo-heading .repo-name {
+	transform: rotate(-90deg);
+	width: 0;
+	white-space: nowrap;
+	cursor: pointer;
+	line-height: 0;
+	margin: 150px 0 0;
+	position: relative;
+	left: 50%;
+	bottom: 5px;
+}
+.repo-heading:nth-child(even) {
+	background-color: rgba(0,0,0,0.03);
+}
+
 .content-lanes .push + .push {
 	margin-top: 5px;
 }
@@ -37,32 +64,20 @@ body > svg:last-child {
 .content-lanes .time .push {
 	font-size: 80%;
 }
-.repo {
+.content-lanes .repo {
 	padding: 0 0 50px 0;
 	flex-shrink: 0;
-	margin-top: 130px;
 }
 
-.repo:nth-child(even) {
+.content-lanes .repo:nth-child(even) {
 	background-color: rgba(0,0,0,0.03);
 }
 
-.repo + .repo:nth-child(odd) {
+.content-lanes .repo + .repo:nth-child(odd) {
 	background-color: rgba(255,255,255,0.03);
 }
 
-.repo-name {
-	-webkit-transform: rotate(-45deg);
-	-webkit-transform-origin: 50% 50%;
-	transform: rotate(-45deg);
-	transform-origin: 50% 50%;
-	padding-left: 25px;
-	width: 0;
-	white-space: nowrap;
-	cursor: pointer;
-	line-height: 0;
-}
-.time .repo-name {
+.content-lanes .time .repo-name {
 	-webkit-transform: none;
 	transform: none;
 }
