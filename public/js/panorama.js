@@ -182,6 +182,7 @@ var Panorama = (function () {
 		this.organization = ko.observable(_.first(organizations));
 		this.view = ko.observable('list');
 		this.loading = ko.observable(false);
+		this.error = ko.observable();
 		this.pushes = ko.observableArray();
 		this.filter = ko.observable();
 
@@ -642,6 +643,7 @@ var Panorama = (function () {
 
 	function fetchPushes(viewModel) {
 		viewModel.pushes([]);
+		viewModel.error(null);
 		viewModel.loading(true);
 
 		var org = viewModel.organization();
@@ -678,8 +680,10 @@ var Panorama = (function () {
 			});
 			viewModel.pushes(pushes);
 			viewModel.loading(false);
-		}).fail(function (err, msg) {
-			console.error(msg);
+		}).fail(function (err) {
+			console.error(err);
+			viewModel.loading(false);
+			viewModel.error("couldn't fetch fetch activity for " + org.login);
 		});
 	}
 

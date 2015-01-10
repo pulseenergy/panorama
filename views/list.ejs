@@ -1,6 +1,7 @@
 <% layout('include/layout') -%>
 
 <p class="loading" data-bind="visible: loading">loading...</p>
+<p class="loading" style="display: none" data-bind="visible: error, text: error"></p>
 <div id="body">
 	<div class="content-list" style="display: none" data-bind="visible: !loading(), if: 'list' == view()">
 		<div class="outer-list-wrapper">
