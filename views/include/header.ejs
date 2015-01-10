@@ -1,6 +1,5 @@
 <header class="main-header">
 	<h1 class="app-name"><img class="app-logo" alt="Panorama" src="/img/panorama.svg"></h1>
-	<h3 class="subtitle" data-bind="if: false"><span data-bind="text: organization().login"></span></h3>
 	<% if (everyauth.loggedIn) { %>
 	<aside class="current-user">
 		<div class="current-user-name">Hello, <strong><%= user.login %></strong></div>

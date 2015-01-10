@@ -35,12 +35,12 @@ body > svg:last-child {
 	vertical-align: bottom;
 }
 .content-lanes .time .push {
-	font-size: smaller;
+	font-size: 80%;
 }
 .repo {
 	padding: 0 0 50px 0;
 	flex-shrink: 0;
-	margin-top: 170px;
+	margin-top: 130px;
 }
 
 .repo:nth-child(even) {
@@ -60,9 +60,6 @@ body > svg:last-child {
 	width: 0;
 	white-space: nowrap;
 	cursor: pointer;
-	font-weight: normal;
-	font-size: 1em;
-	margin: 0 0 0;
 	line-height: 0;
 }
 .time .repo-name {
