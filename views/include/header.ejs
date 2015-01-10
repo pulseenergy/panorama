@@ -14,18 +14,7 @@
 	<aside class="current-view">
 		<div class="current-view-type">
 			Showing
-			<select data-bind="value: view">
-				<option value="list">List</option>
-				<option value="lanes">Lanes</option>
-			</select>
-			for
-			<!-- ko if: organizations().length > 0 -->
-				<% if (everyauth.loggedIn) { %>
-				<select data-bind="options: organizations, value: organization, optionsCaption: '<%= user ? user.login : '???' %>', optionsText: 'login'"></select>
-				<% } else { %>
-				<select data-bind="options: organizations, value: organization, optionsText: 'login'"></select>
-				<% } %>
-			<!-- /ko -->
+			<input class="input" data-bind="value: organizationInput"/> as <span class="input" data-bind="click: switchView, text: view"></span>
 		</div>
 	</aside>
 </header>

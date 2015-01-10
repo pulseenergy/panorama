@@ -185,6 +185,19 @@ var Panorama = (function () {
 		this.pushes = ko.observableArray();
 		this.filter = ko.observable();
 
+		this.organizationInput = ko.computed({
+			read: function () {
+				var org = this.organization();
+				return org && org.login;
+			},
+			write: function (str) {
+				var view = this.view();
+				history.pushState(null, null, '/' + view + '?organization=' + str);
+				this.organization({ login: str });
+			},
+			owner: this
+		});
+
 		var underlay = {};
 		this.adjustAllLanes = _.debounce(function () {
 			var element = document.getElementById('underlay');
@@ -311,6 +324,10 @@ var Panorama = (function () {
 		});
 	}
 
+	Panorama.prototype.switchView = function () {
+		var next = { list: 'lanes', lanes: 'list' };
+		this.view(next[this.view()]);
+	};
 	Panorama.prototype.getRepository = function (repoName) {
 		var repo = _.findWhere(this.repos(), {name: repoName});
 		return repo || {name: '', simpleName: '', color: 'black'};
@@ -322,15 +339,15 @@ var Panorama = (function () {
 		return this.formatTimeAgo(push.date);
 	};
 	Panorama.prototype.setFilter = function (type, value) {
-		console.log('setFilter', type, value);
+		var state = '/list?organization=' + this.organization().login;
 		if (type == 'repo' && value) {
-			history.pushState(null, null, '/list?repo=' + value);
+			history.pushState(null, null, state + '&repo=' + value);
 			this.filter(function (push) { return push.repo === value; });
 		} else if (type == 'user' && value) {
-			history.pushState(null, null, '/list?user=' + value);
+			history.pushState(null, null, state + '&user=' + value);
 			this.filter(function (push) { return push.user.login === value; });
 		} else {
-			history.pushState(null, null, '/list');
+			history.pushState(null, null, state);
 			this.filter(null);
 		}
 		this.view('list');
@@ -338,6 +355,11 @@ var Panorama = (function () {
 	Panorama.prototype.applyWindowLocation = function () {
 		this.view(window.location.pathname.substring(1));
 		var search = parseLocationSearch();
+
+		if (search && search.organization) {
+			this.organization({ login: search.organization });
+		}
+
 		// TODO: could make these additive, but is that intuitive?
 		if (search && search.user) {
 			this.filter(function (push) { return push.user.login === search.user; });
@@ -348,19 +370,20 @@ var Panorama = (function () {
 		}
 	};
 	Panorama.prototype.init = function () {
-		this.view(window.location.pathname.substring(1));
+		this.applyWindowLocation();
+		window.onpopstate = this.applyWindowLocation.bind(this);
+
 		fetchPushes(this);
 		this.organization.subscribe(fetchPushes.bind(null, this));
+
 		this.view.subscribe(function (view) {
 			var pathname = '/' + view;
 			if (window.location.pathname.indexOf(pathname) !== 0) {
-				history.pushState(null, null, pathname);
+				history.pushState(null, null, pathname + '?organization=' + this.organization().login);
 			}
-		});
-		ko.applyBindings(this);
+		}, this);
 
-		this.applyWindowLocation();
-		window.onpopstate = this.applyWindowLocation.bind(this);
+		ko.applyBindings(this);
 	};
 
 	function parseLocationSearch() {

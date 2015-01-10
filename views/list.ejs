@@ -1,8 +1,8 @@
 <% layout('include/layout') -%>
 
 <p class="loading" data-bind="visible: loading">loading...</p>
-<div id="body" style="display: none" data-bind="visible: !loading()">
-	<div class="content-list" data-bind="if: 'list' == view()">
+<div id="body">
+	<div class="content-list" style="display: none" data-bind="visible: !loading(), if: 'list' == view()">
 		<div class="outer-list-wrapper">
 			<nav data-bind="visible: filter" class="list-nav">
 				<button data-bind="click: setFilter">Clear filter</button>
@@ -26,7 +26,7 @@
 			</ul>
 		</div>
 	</div>
-	<div class="content-lanes" data-bind="if: 'lanes' == view()">
+	<div class="content-lanes" style="display: none" data-bind="visible: !loading(), if: 'lanes' == view()">
 		<div class="outer-lane-wrapper"><div class="inner-lane-wrapper">
 			<div class="repo time">
 				<h3 class="repo-name" data-bind="visible: $root.buckets().length > 0">&nbsp;</h3>

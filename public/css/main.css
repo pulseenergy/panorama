@@ -39,6 +39,13 @@ body {
 .current-user > div + div {
 	padding-left: 5px;
 }
+.current-view-type > .input {
+	background-color: rgba(255,255,255,0.8);
+	border: 1px solid rgba(0,0,0,0.3);
+	padding: 2px 4px;
+	border-radius: 5px;
+	font: inherit;
+}
 .current-user-name {
 	white-space: nowrap;
 }
