@@ -50,9 +50,6 @@ body > svg:last-child {
 	left: 50%;
 	bottom: 5px;
 }
-.repo-heading:nth-child(even) {
-	background-color: rgba(0,0,0,0.03);
-}
 
 .content-lanes .push + .push {
 	margin-top: 5px;
@@ -70,10 +67,12 @@ body > svg:last-child {
 	flex-shrink: 0;
 }
 
+.repo-headings .repo-heading:nth-child(even),
 .content-lanes .repo:nth-child(even) {
 	background-color: rgba(0,0,0,0.03);
 }
 
+.repo-headings .repo-heading + .repo-heading:nth-child(odd),
 .content-lanes .repo + .repo:nth-child(odd) {
 	background-color: rgba(255,255,255,0.03);
 }
