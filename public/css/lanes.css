@@ -31,11 +31,11 @@ body > svg:last-child {
 }
 .content-lanes .time,
 .repo-headings .repo-heading:first-child {
-	flex-basis: 90px; /* ugh magic */
+	width: 90px; /* ugh magic */
 }
 .repo-headings .repo-heading {
-	flex-basis: 60px; /* match lanes: 50px + 10px padding */
-	flex-shrink: 0;
+	width: 60px; /* match lanes: 50px + 10px padding */
+	flex: 0 0 auto;
 	overflow: hidden; /* long repo names do not encroach */
 }
 .repo-headings .repo-heading .repo-name {
