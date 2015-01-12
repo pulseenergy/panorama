@@ -9,6 +9,7 @@
 	display: flex;
 	align-items: stretch;
 	float: left;
+	padding-top: 2px;
 }
 
 #underlay {
