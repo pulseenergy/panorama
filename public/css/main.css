@@ -88,3 +88,6 @@ body {
 strong {
 	font-weight: bold;
 }
+svg {
+	padding-top: 2px;
+}

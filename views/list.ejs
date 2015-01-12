@@ -33,7 +33,7 @@
 				<div class="repo-heading repo-heading-dummy" data-bind="visible: $root.buckets().length > 0">&nbsp;</div>
 				<!-- ko foreach: bucketedPushesByRepo -->
 				<div class="repo-heading">
-					<h3 class="repo-name" data-bind="text: repo.simpleName, click: $root.setFilter.bind($root)"></h3>
+					<h3 class="repo-name" data-bind="text: repo.simpleName, click: $root.setFilter.bind($root, 'repo', repo.name)"></h3>
 				</div>
 				<!-- /ko -->
 			</div>

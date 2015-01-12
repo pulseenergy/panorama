@@ -658,7 +658,6 @@ var Panorama = (function () {
 			var pushes = [];
 			_.each(response, function (event) {
 				if (!seen[event.type]) {
-					console.log(event);
 					seen[event.type] = true;
 				}
 				if (event.type === 'PushEvent') {
