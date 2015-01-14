@@ -5,7 +5,7 @@ body {
 	flex-direction: column;
 }
 #body {
-	flex: 1;
+	flex: 1 0 auto;
 }
 .main-header {
 	z-index: 100;
