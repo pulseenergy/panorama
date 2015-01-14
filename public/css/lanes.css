@@ -1,7 +1,10 @@
 .content-lanes {
-	display: flex;
-	justify-content: center;
 	white-space: nowrap;
+}
+
+.content-lanes .outer-lane-wrapper {
+	margin: 0 auto;
+	display: table;
 }
 
 .content-lanes .inner-lane-wrapper {
