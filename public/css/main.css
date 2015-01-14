@@ -8,8 +8,6 @@ body {
 	flex: 1;
 }
 .main-header {
-	display: flex;
-	justify-content: center;
 	z-index: 100;
 	box-shadow: 0 0 7px 1px rgba(50,50,50, 0.2);
 	background-color: rgba(255,255,255,0.5);
@@ -57,6 +55,7 @@ body {
 }
 .app-name {
 	margin: 0;
+	text-align: center;
 }
 .app-logo {
 	height: 28px;
