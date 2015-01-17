@@ -34,7 +34,7 @@ body {
 .current-user > div {
 	display: table-cell;
 	vertical-align: middle;
-	height: 40px;
+	height: 30px;
 }
 .current-view > div + div,
 .current-user > div + div {
@@ -58,7 +58,7 @@ body {
 	text-align: center;
 }
 .app-logo {
-	height: 28px;
+	height: 18px;
 	vertical-align: bottom;
 }
 .loading, .error {
@@ -75,13 +75,12 @@ body {
 	opacity: 0.7;
 }
 .tubular {
-	border-radius: 5px/50%;
 	overflow: hidden;
 	display: inline-block;
 	vertical-align: bottom;
 }
 .tubular > img {
-	border-radius: 50%/5px;
+	border-radius: 50% / 5px;
 	vertical-align: bottom;
 }
 strong {
