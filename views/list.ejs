@@ -42,7 +42,7 @@
 					<!-- ko foreach: { data: $root.bucketLabels } -->
 					<ul class="pushes" data-bind="css: 'bucket-' + $index()">
 						<li class="push">
-							<span data-bind="text: $data"></span>
+							<span data-bind="attr: { 'data-first': first.toString() }, visible: first, text: label"></span>
 						</li>
 					</ul>
 					<!-- /ko -->

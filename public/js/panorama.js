@@ -168,12 +168,19 @@ var Panorama = (function () {
 //					.fill(colors[bucket % colors.length]);
 //		});
 
+		var rowLabels = document.querySelectorAll('.time .push span');
 		rows.forEach(function (row, bucket) {
-			underlay.path(smooth(points(row, -1).map(function (p) {
+			var context = underlay.path(smooth(points(row, -1).map(function (p) {
 				p.ymin += 1;
 				return p;
-			}), 'ymin', null, false))
-				.fill('none').stroke({width: '2px', color: colors[bucket % colors.length]});
+			}), 'ymin', null, false)).fill('none');
+
+			if (rowLabels[bucket].dataset.first !== 'false') {
+				context.stroke({
+					width: '2px',
+					color: colors[bucket % colors.length]
+				});
+			}
 		});
 	}
 
@@ -260,7 +267,7 @@ var Panorama = (function () {
 						bucketEnd = moment(date).clone().startOf('minute');
 						bucketEnd.minutes(15 * Math.floor(bucketEnd.minutes() / 15));
 						bucketEnd.subtract(bucketSize[0]);
-						buckets.push(bucketEnd.clone());
+						buckets.push({ time: bucketEnd.clone(), label: bucketEnd.fromNow() });
 					}
 					if (bucketEnd.isBefore(date)) {
 						return bucketIndex;
@@ -269,7 +276,7 @@ var Panorama = (function () {
 						bucketSizeIndex++;
 						bucketEnd.subtract(bucketSize[Math.floor(bucketSizeIndex / 12)] || { days: 1 });
 						if (bucketEnd.isBefore(date)) {
-							buckets.push(bucketEnd.clone());
+							buckets.push({ time: bucketEnd.clone(), label: bucketEnd.fromNow() });
 							return ++bucketIndex;
 						}
 					}
@@ -286,10 +293,19 @@ var Panorama = (function () {
 		});
 		this.bucketLabels = ko.computed({
 			read: function () {
-				var buckets = _.map(this.buckets(), this.formatTimeAgo.bind(this));
-				buckets.unshift('now');
-				buckets.pop();
-				return buckets;
+				var labels = _.pluck(this.buckets(), 'label');
+				labels.unshift('now');
+				labels.pop();
+
+				var seenLabel = {};
+				return _.map(labels, function (label) {
+					var firstSeen = !seenLabel[label];
+					seenLabel[label] = true;
+					return {
+						label: label,
+						first: firstSeen
+					};
+				});
 			},
 			owner: this,
 			deferEvaluation: true
