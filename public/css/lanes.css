@@ -59,7 +59,6 @@ body > svg:last-child {
 }
 .content-lanes .push img {
 	width: 50px;
-	border-radius: 50% / 5px;
 	vertical-align: bottom;
 }
 .content-lanes .time .push {

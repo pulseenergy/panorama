@@ -51,7 +51,7 @@ body {
 	white-space: nowrap;
 }
 .current-user-avatar img {
-	width: 40px;
+	width: 30px;
 }
 .app-name {
 	margin: 0;
@@ -76,13 +76,20 @@ body {
 	background-size: cover;
 	opacity: 0.7;
 }
+.current-user-avatar .tubular {
+	border-radius: 3px/50%;
+}
+.current-user-avatar .tubular > img {
+	border-radius: 50%/3px;
+}
 .tubular {
+	border-radius: 5px/50%;
 	overflow: hidden;
 	display: inline-block;
 	vertical-align: bottom;
 }
 .tubular > img {
-	border-radius: 50% / 5px;
+	border-radius: 50%/5px;
 	vertical-align: bottom;
 }
 strong {
