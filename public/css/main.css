@@ -47,6 +47,9 @@ body {
 	border-radius: 5px;
 	font: inherit;
 }
+.current-view-type > span.input {
+	cursor: pointer;
+}
 .current-user-name {
 	white-space: nowrap;
 }
