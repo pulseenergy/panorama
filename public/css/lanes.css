@@ -79,14 +79,34 @@ body > svg:last-child {
 	background-color: rgba(255,255,255,0.03);
 }
 
-.lane-repo-labelled:hover:before {
-	background: linear-gradient(to right, transparent 60px, rgba(0,0,0,0.2) 60px, rgba(0,0,0,0.2) 100%);
-	content: attr(data-repo-name);
+.lane-inline-label {
+	visibility: hidden;
+	background: #D4DADD;
+	box-shadow: 0 0 7px 1px rgba(50,50,50, 0.2);
 	position: fixed;
 	top: 0;
 	padding: 5px;
 	z-index: 1000;
-	color: white;
+	color: black;
+	margin-left: 30px; /* half of lane width */
+	transform: translateX(-50%);
+}
+.lane-inline-label:after {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	content: " ";
+	height: 0;
+	width: 0;
+	pointer-events: none;
+	border: solid transparent;
+	border-top-color: #D4DADD;
+	border-width: 8px;
+	margin-left: -8px;
+}
+
+.lane-repo:hover .lane-inline-label {
+	visibility: visible;
 }
 
 .content-lanes .lane-repo-labelled:hover {

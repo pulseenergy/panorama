@@ -48,7 +48,8 @@
 					<!-- /ko -->
 				</div>
 				<!-- ko foreach: bucketedPushesByRepo -->
-				<div class="lane lane-repo" data-bind="attr: { 'data-repo-name': repo.simpleName }, css: { 'lane-repo-labelled': $root.laneLabelVisible }">
+				<div class="lane lane-repo">
+					<div class="lane-inline-label" data-bind="text: repo.simpleName, visible: $root.laneLabelVisible"></div>
 					<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 						<li class="push">
