@@ -33,7 +33,7 @@ body > svg:last-child {
 .content-lanes .repo-headings {
 	display: flex;
 }
-.content-lanes .time,
+.content-lanes .lane-time,
 .repo-headings .repo-heading:first-child {
 	width: 90px; /* ugh magic */
 }
@@ -61,25 +61,39 @@ body > svg:last-child {
 	width: 50px;
 	vertical-align: bottom;
 }
-.content-lanes .time .push {
+.content-lanes .lane-time .push {
 	font-size: 80%;
 }
-.content-lanes .repo {
+.content-lanes .lane {
 	padding: 0 0 50px 0;
 	flex-shrink: 0;
 }
 
 .repo-headings .repo-heading:nth-child(even),
-.content-lanes .repo:nth-child(even) {
+.content-lanes .lane:nth-child(even) {
 	background-color: rgba(0,0,0,0.03);
 }
 
 .repo-headings .repo-heading + .repo-heading:nth-child(odd),
-.content-lanes .repo + .repo:nth-child(odd) {
+.content-lanes .lane + .lane:nth-child(odd) {
 	background-color: rgba(255,255,255,0.03);
 }
 
-.content-lanes .time .repo-name {
+.lane-repo-labelled:hover:before {
+	background: linear-gradient(to right, transparent 60px, rgba(0,0,0,0.2) 60px, rgba(0,0,0,0.2) 100%);
+	content: attr(data-repo-name);
+	position: fixed;
+	top: 0;
+	padding: 5px;
+	z-index: 1000;
+	color: white;
+}
+
+.content-lanes .lane-repo-labelled:hover {
+	background-color: rgba(0,0,0,0.2) !important;
+}
+
+.content-lanes .lane-time .repo-name {
 	-webkit-transform: none;
 	transform: none;
 }

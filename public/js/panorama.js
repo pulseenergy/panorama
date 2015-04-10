@@ -168,7 +168,7 @@ var Panorama = (function () {
 //					.fill(colors[bucket % colors.length]);
 //		});
 
-		var rowLabels = document.querySelectorAll('.time .push span');
+		var rowLabels = document.querySelectorAll('.lane-time .push span');
 		rows.forEach(function (row, bucket) {
 			var context = underlay.path(smooth(points(row, -1).map(function (p) {
 				p.ymin += 1;
@@ -192,6 +192,7 @@ var Panorama = (function () {
 		this.error = ko.observable();
 		this.pushes = ko.observableArray();
 		this.filter = ko.observable();
+		this.laneLabelVisible = ko.observable(false);
 
 		this.organizationInput = ko.computed({
 			read: function () {
@@ -390,6 +391,13 @@ var Panorama = (function () {
 		this.applyWindowLocation();
 		window.onpopstate = this.applyWindowLocation.bind(this);
 
+		var lanes = document.querySelectorAll('.inner-lane-wrapper')[0];
+		window.onscroll = function () {
+			//console.log('window scrolled', lanes[0].getBoundingClientRect().top);
+			var showLabel = lanes && lanes.getBoundingClientRect().top <= 0;
+			this.laneLabelVisible(showLabel);
+		}.bind(this);
+
 		fetchPushes(this);
 		this.organization.subscribe(fetchPushes.bind(null, this));
 
@@ -415,6 +423,20 @@ var Panorama = (function () {
 			map[split[0]] = split[1];
 		});
 		return map;
+	}
+
+	function makeTooltip(options) {
+		options = options || {};
+
+		var text = moment(this.date).fromNow();
+		if (options.branch && this.branch && this.branch !== 'master') {
+			text += ' on ' + this.branch;
+		}
+		text += ' by ' + this.user.login + '\n';
+		if (options.repo) {
+			text += this.repo + '\n';
+		}
+		return text + this.message();
 	}
 
 	function PushEvent(event) {
@@ -453,12 +475,7 @@ var Panorama = (function () {
 	};
 
 	PushEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		if (this.branch && this.branch !== 'master') {
-			text += ' on ' + this.branch;
-		}
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
+		return makeTooltip.call(this, { branch: true });
 	};
 
 	PushEvent.prototype.combine = function (push) {
@@ -507,12 +524,7 @@ var Panorama = (function () {
 	};
 
 	CommentEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		if (this.branch && this.branch !== 'master') {
-			text += ' on ' + this.branch;
-		}
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
+		return makeTooltip.call(this, { branch: true });
 	};
 
 	CommentEvent.prototype.combine = function () {
@@ -551,9 +563,7 @@ var Panorama = (function () {
 	};
 
 	TagEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
+		return makeTooltip.call(this);
 	};
 
 	TagEvent.prototype.combine = function () {
@@ -593,9 +603,7 @@ var Panorama = (function () {
 	};
 
 	BranchEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
+		return makeTooltip.call(this);
 	};
 
 	BranchEvent.prototype.combine = function () {
@@ -637,9 +645,7 @@ var Panorama = (function () {
 	};
 
 	WikiEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
+		return makeTooltip.call(this);
 	};
 
 	WikiEvent.prototype.combine = function (push) {

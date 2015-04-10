@@ -38,7 +38,7 @@
 				<!-- /ko -->
 			</div>
 			<div class="inner-lane-wrapper">
-				<div class="repo time">
+				<div class="lane lane-time">
 					<!-- ko foreach: { data: $root.bucketLabels } -->
 					<ul class="pushes" data-bind="css: 'bucket-' + $index()">
 						<li class="push">
@@ -48,7 +48,7 @@
 					<!-- /ko -->
 				</div>
 				<!-- ko foreach: bucketedPushesByRepo -->
-				<div class="repo">
+				<div class="lane lane-repo" data-bind="attr: { 'data-repo-name': repo.simpleName }, css: { 'lane-repo-labelled': $root.laneLabelVisible }">
 					<!-- ko foreach: { data: buckets, afterRender: $root.adjustAllLanes } -->
 					<ul class="pushes" data-bind="foreach: pushes, css: bucketClass">
 						<li class="push">
