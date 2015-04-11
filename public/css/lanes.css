@@ -80,18 +80,24 @@ body > svg:last-child {
 }
 
 .lane-inline-label {
-	visibility: hidden;
+	opacity: 0;
 	background: #D4DADD;
 	box-shadow: 0 0 7px 1px rgba(50,50,50, 0.2);
 	position: fixed;
 	top: 0;
-	padding: 5px;
+	padding: 5px 5px 8px;
 	z-index: 1000;
 	color: black;
 	margin-left: 30px; /* half of lane width */
 	transform: translateX(-50%);
+
+	-webkit-transition: opacity 0.1s linear;
+	-moz-transition: opacity 0.1s linear;
+	border-bottom-left-radius: 50% 4px;
+	border-bottom-right-radius: 50% 4px;
 }
-.lane-inline-label:after {
+/* arrow makes label appear too tooltipish? */
+/* .lane-inline-label:after {
 	position: absolute;
 	top: 100%;
 	left: 50%;
@@ -103,10 +109,10 @@ body > svg:last-child {
 	border-top-color: #D4DADD;
 	border-width: 8px;
 	margin-left: -8px;
-}
+}*/
 
 .lane-repo:hover .lane-inline-label {
-	visibility: visible;
+	opacity: 1;
 }
 
 .content-lanes .lane-repo-labelled:hover {
@@ -189,3 +195,15 @@ body > svg:last-child {
 	margin-right: -18px;
 	margin-left: 0;
 }
+
+.hint--info:after {
+	background-color: #65567a;
+	text-shadow: 0 -1px 0px #193c4c; }
+.hint--info.hint--top:before {
+	border-top-color: #65567a; }
+.hint--info.hint--bottom:before {
+	border-bottom-color: #65567a; }
+.hint--info.hint--left:before {
+	border-left-color: #65567a; }
+.hint--info.hint--right:before {
+	border-right-color: #65567a; }
