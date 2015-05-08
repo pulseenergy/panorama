@@ -100,13 +100,12 @@ body {
 	border-radius: 50%/3px;
 }
 .tubular {
-	border-radius: 5px/50%;
 	overflow: hidden;
 	display: inline-block;
 	vertical-align: bottom;
 }
 .tubular > img {
-	border-radius: 50%/5px;
+	border-radius: 50%/8px;
 	vertical-align: bottom;
 }
 strong {
