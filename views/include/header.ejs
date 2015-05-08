@@ -1,5 +1,5 @@
 <header class="main-header">
-	<h1 class="app-name"><img class="app-logo" alt="Panorama" src="/img/panorama.svg"></h1>
+	<h1 class="app-name"><img class="app-logo" alt="Panorama" src="/img/panorama_logo_b.svg"></h1>
 	<% if (everyauth.loggedIn) { %>
 	<aside class="current-user">
 		<div class="current-user-name">Hello, <strong><%= user.login %></strong></div>
@@ -13,7 +13,7 @@
 	<aside class="current-view">
 		<div class="current-view-type">
 			Showing
-			<input class="input" data-bind="value: organizationInput"/> as <span class="input" data-bind="click: switchView, text: view">lanes</span>
+			<input class="input input-repo-name" data-bind="value: organizationInput" placeholder="Github repository name"/> as <span class="input" data-bind="click: switchView, text: view">lanes</span>
 		</div>
 	</aside>
 </header>
