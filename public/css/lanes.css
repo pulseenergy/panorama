@@ -71,7 +71,7 @@ body > svg:last-child {
 
 .repo-headings .repo-heading:nth-child(even),
 .content-lanes .lane:nth-child(even) {
-	background-color: rgba(0,0,0,0.03);
+	background-color: rgba(0,0,0,0.025);
 }
 
 .repo-headings .repo-heading + .repo-heading:nth-child(odd),
