@@ -676,6 +676,52 @@ var Panorama = (function () {
 		return 'octicon-book';
 	};
 
+	function IssuesEvent(event) {
+		this.event = event;
+
+		this.id = event.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: safeToAppend(event.actor.avatar_url)
+		};
+		this.date = event.created_at;
+		this.action = event.payload.action;
+		this.issue = event.payload.issue;
+		this.size = 0;
+		this.branch = null; // ???
+	}
+
+	IssuesEvent.prototype.link = function () {
+		return this.issue.html_url;
+	};
+
+	IssuesEvent.prototype.linkLabel = function () {
+		return this.action + ' issue';
+	};
+
+	IssuesEvent.prototype.message = function () {
+		return '‣ ' + this.action + ' issue ' + this.issue.title;
+	};
+
+	IssuesEvent.prototype.tooltip = function () {
+		var text = moment(this.date).fromNow();
+		text += ' by ' + this.user.login;
+		return text + '\n' + this.message();
+	};
+
+	IssuesEvent.prototype.combine = function (push) {
+		return false;
+	};
+
+	IssuesEvent.prototype.icon = function () {
+		if (this.action === 'closed') {
+			return 'octicon-issue-closed';
+		}
+		return 'octicon-issue-opened';
+	};
+
 	function fetchPushes(viewModel) {
 		viewModel.pushes([]);
 		viewModel.error(null);
@@ -706,10 +752,12 @@ var Panorama = (function () {
 					} else if (event.payload.ref_type === 'branch') {
 						pushes.push(new BranchEvent(event));
 					} else {
-						console.log(event);
+						console.log('unhandled CreateEvent type', event);
 					}
 				} else if (event.type === 'GollumEvent') {
 					pushes.push(new WikiEvent(event));
+				} else if (event.type === 'IssuesEvent') {
+					pushes.push(new IssuesEvent(event));
 				}
 			});
 			viewModel.pushes(pushes);
