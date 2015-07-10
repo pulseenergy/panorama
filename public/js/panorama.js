@@ -735,6 +735,55 @@ var Panorama = (function () {
 		return 'octicon-issue-opened';
 	};
 
+	function PullRequestEvent(event) {
+		this.event = event;
+
+		this.id = event.id;
+		this.repo = event.repo.name;
+		this.user = {
+			login: event.actor.login,
+			url: event.actor.url,
+			image: safeToAppend(event.actor.avatar_url)
+		};
+		this.date = event.created_at;
+		this.action = event.payload.action;
+		this.issue = event.payload.pull_request;
+		this.size = 0;
+		this.branch = null; // ???
+	}
+
+	PullRequestEvent.prototype.link = function () {
+		return this.issue.html_url;
+	};
+
+	PullRequestEvent.prototype.linkLabel = function () {
+		return this.action + ' pull request';
+	};
+
+	PullRequestEvent.prototype.message = function () {
+		return '‣ ' + this.action + ' pull request ' + this.issue.title;
+	};
+
+	PullRequestEvent.prototype.tooltip = function () {
+		var text = moment(this.date).fromNow();
+		text += ' by ' + this.user.login;
+		return text + '\n' + this.message();
+	};
+
+	PullRequestEvent.prototype.combine = function (push) {
+		if (push instanceof PullRequestEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket && push.event.payload.number === this.event.payload.number) {
+			var combined = new PullRequestEvent(this.event);
+			combined.bucket = this.bucket;
+			combined.action = _.union(this.action.split(' & '), push.action.split(' & ')).reverse().join(' & '); // opened & closed
+			return combined;
+		}
+		return false;
+	};
+
+	PullRequestEvent.prototype.icon = function () {
+		return 'octicon-git-pull-request';
+	};
+
 	function fetchPushes(viewModel) {
 		viewModel.pushes([]);
 		viewModel.error(null);
@@ -771,6 +820,8 @@ var Panorama = (function () {
 					pushes.push(new WikiEvent(event));
 				} else if (event.type === 'IssuesEvent') {
 					pushes.push(new IssuesEvent(event));
+				} else if (event.type === 'PullRequestEvent') {
+					pushes.push(new PullRequestEvent(event));
 				}
 			});
 			viewModel.pushes(pushes);
