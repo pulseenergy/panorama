@@ -212,8 +212,13 @@ var Panorama = (function () {
 			},
 			write: function (str) {
 				var view = this.view();
-				history.pushState(null, null, '/' + view + '?organization=' + str);
-				this.organization({ login: str });
+				if (str != null && str !== '') {
+					history.pushState(null, null, '/' + view + '?organization=' + str);
+					this.organization({login: str});
+				} else {
+					history.pushState(null, null, '/' + view);
+					this.organization(null);
+				}
 			},
 			owner: this
 		});
@@ -368,7 +373,11 @@ var Panorama = (function () {
 		return this.formatTimeAgo(push.date);
 	};
 	Panorama.prototype.setFilter = function (type, value) {
-		var state = '/list?organization=' + this.organization().login;
+		var state = '/list';
+		var organization = this.organization();
+		if (organization) {
+			state += '?organization=' + organization.login;
+		}
 		if (type == 'repo' && value) {
 			history.pushState(null, null, state + '&repo=' + value);
 			this.filter(function (push) { return push.repo === value; });
@@ -386,7 +395,7 @@ var Panorama = (function () {
 		var search = parseLocationSearch();
 
 		if (search && search.organization) {
-			this.organization({ login: search.organization });
+			this.organization(search.organization === '' ? null : { login: search.organization });
 		}
 
 		// TODO: could make these additive, but is that intuitive?
@@ -415,7 +424,11 @@ var Panorama = (function () {
 		this.view.subscribe(function (view) {
 			var pathname = '/' + view;
 			if (window.location.pathname.indexOf(pathname) !== 0) {
-				history.pushState(null, null, pathname + '?organization=' + this.organization().login);
+				var organization = this.organization();
+				if (organization) {
+					pathname += '?organization=' + organization.login;
+				}
+				history.pushState(null, null, pathname);
 			}
 		}, this);
 
