@@ -25,6 +25,17 @@ var Panorama = (function () {
 		return n > 0 ? 1 : -1;
 	}
 
+	function safeToAppend(url) {
+		var sep = '&';
+		if (url.indexOf('?') === '-1') {
+			sep = '?';
+		}
+		if (url[url.length - 1] === sep) {
+			return url;
+		}
+		return url + sep;
+	}
+
 	function drawLanesSvg(underlay) {
 		var overlap = 10;
 
@@ -444,10 +455,11 @@ var Panorama = (function () {
 
 		this.id = event.payload.push_id;
 		this.repo = event.repo.name;
+		this.repoUrl = event.repo.url.replace("/api/v3/repos/", "/");
 		this.user = {
 			login: event.actor.login,
 			url: event.actor.url,
-			image: event.actor.avatar_url
+			image: safeToAppend(event.actor.avatar_url)
 		};
 		this.date = event.created_at;
 		this.commits = event.payload.commits;
@@ -459,9 +471,9 @@ var Panorama = (function () {
 
 	PushEvent.prototype.link = function () {
 		if (this.size < 2) {
-			return 'https://github.com/' + this.repo + '/commit/' + this.head;
+			return this.repoUrl + '/commit/' + this.head;
 		}
-		return 'https://github.com/' + this.repo + '/compare/' + this.before + '...' + this.head;
+		return this.repoUrl + '/compare/' + this.before + '...' + this.head;
 	};
 
 	PushEvent.prototype.linkLabel = function () {
@@ -502,7 +514,7 @@ var Panorama = (function () {
 		this.user = {
 			login: event.actor.login,
 			url: event.actor.url,
-			image: event.actor.avatar_url
+			image: safeToAppend(event.actor.avatar_url)
 		};
 		this.date = event.created_at;
 		this.size = 0;
@@ -540,10 +552,11 @@ var Panorama = (function () {
 
 		this.id = event.id;
 		this.repo = event.repo.name;
+		this.repoUrl = event.repo.url.replace("/api/v3/repos/", "/");
 		this.user = {
 			login: event.actor.login,
 			url: event.actor.url,
-			image: event.actor.avatar_url
+			image: safeToAppend(event.actor.avatar_url)
 		};
 		this.date = event.created_at;
 		this.size = 0;
@@ -551,7 +564,7 @@ var Panorama = (function () {
 	}
 
 	TagEvent.prototype.link = function () {
-		return 'https://github.com/' + this.repo + '/tree/' + this.event.payload.ref;
+		return this.repoUrl + '/tree/' + this.event.payload.ref;
 	};
 
 	TagEvent.prototype.linkLabel = function () {
@@ -579,10 +592,11 @@ var Panorama = (function () {
 
 		this.id = event.id;
 		this.repo = event.repo.name;
+		this.repoUrl = event.repo.url.replace("/api/v3/repos/", "/");
 		this.user = {
 			login: event.actor.login,
 			url: event.actor.url,
-			image: event.actor.avatar_url
+			image: safeToAppend(event.actor.avatar_url)
 		};
 		this.date = event.created_at;
 		this.size = 0;
@@ -590,8 +604,7 @@ var Panorama = (function () {
 	}
 
 	BranchEvent.prototype.link = function () {
-		// https://github.com/pulseenergy/connector-adapters/tree/connector-adapters_v0.284.0
-		return 'https://github.com/' + this.repo + '/tree/' + this.event.payload.ref;
+		return this.repoUrl + '/tree/' + this.event.payload.ref;
 	};
 
 	BranchEvent.prototype.linkLabel = function () {
@@ -622,7 +635,7 @@ var Panorama = (function () {
 		this.user = {
 			login: event.actor.login,
 			url: event.actor.url,
-			image: event.actor.avatar_url
+			image: safeToAppend(event.actor.avatar_url)
 		};
 		this.date = event.created_at;
 		this.pages = event.payload.pages;
@@ -669,7 +682,7 @@ var Panorama = (function () {
 		viewModel.loading(true);
 
 		var org = viewModel.organization();
-		var url = org == null ? './a/user/events' : './a/organization/' + org.login + '/events';
+		var url = (org == null || org === '') ? './a/user/events' : './a/organization/' + org.login + '/events';
 
 		reqwest({
 			url: url,
