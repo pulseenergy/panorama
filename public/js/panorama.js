@@ -449,17 +449,13 @@ var Panorama = (function () {
 		return map;
 	}
 
-	function makeTooltip(options) {
-		options = options || {};
-
+	function defaultTooltip() {
+		/*jshint validthis:true */
 		var text = moment(this.date).fromNow();
-		if (options.branch && this.branch && this.branch !== 'master') {
+		if (this.branch && this.branch !== 'master') {
 			text += ' on ' + this.branch;
 		}
 		text += ' by ' + this.user.login + '\n';
-		if (options.repo) {
-			text += this.repo + '\n';
-		}
 		return text + this.message();
 	}
 
@@ -499,9 +495,7 @@ var Panorama = (function () {
 		}).join('\n');
 	};
 
-	PushEvent.prototype.tooltip = function () {
-		return makeTooltip.call(this, { branch: true });
-	};
+	PushEvent.prototype.tooltip = defaultTooltip;
 
 	PushEvent.prototype.combine = function (push) {
 		if (push instanceof PushEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket && push.branch === this.branch) {
@@ -548,9 +542,7 @@ var Panorama = (function () {
 		return '‣ ' + this.event.payload.comment.body;
 	};
 
-	CommentEvent.prototype.tooltip = function () {
-		return makeTooltip.call(this, { branch: true });
-	};
+	CommentEvent.prototype.tooltip = defaultTooltip;
 
 	CommentEvent.prototype.combine = function () {
 		return false;
@@ -588,9 +580,7 @@ var Panorama = (function () {
 		return '‣ created tag ' + this.event.payload.ref;
 	};
 
-	TagEvent.prototype.tooltip = function () {
-		return makeTooltip.call(this);
-	};
+	TagEvent.prototype.tooltip = defaultTooltip;
 
 	TagEvent.prototype.combine = function () {
 		return false;
@@ -628,9 +618,7 @@ var Panorama = (function () {
 		return '‣ created branch ' + this.event.payload.ref;
 	};
 
-	BranchEvent.prototype.tooltip = function () {
-		return makeTooltip.call(this);
-	};
+	BranchEvent.prototype.tooltip = defaultTooltip;
 
 	BranchEvent.prototype.combine = function () {
 		return false;
@@ -670,9 +658,7 @@ var Panorama = (function () {
 		}).join('\n');
 	};
 
-	WikiEvent.prototype.tooltip = function () {
-		return makeTooltip.call(this);
-	};
+	WikiEvent.prototype.tooltip = defaultTooltip;
 
 	WikiEvent.prototype.combine = function (push) {
 		if (push instanceof WikiEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket) {
@@ -718,11 +704,7 @@ var Panorama = (function () {
 		return '‣ ' + this.action + ' issue ' + this.issue.title;
 	};
 
-	IssuesEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
-	};
+	IssuesEvent.prototype.tooltip = defaultTooltip;
 
 	IssuesEvent.prototype.combine = function (push) {
 		return false;
@@ -764,11 +746,7 @@ var Panorama = (function () {
 		return '‣ ' + this.action + ' pull request ' + this.issue.title;
 	};
 
-	PullRequestEvent.prototype.tooltip = function () {
-		var text = moment(this.date).fromNow();
-		text += ' by ' + this.user.login;
-		return text + '\n' + this.message();
-	};
+	PullRequestEvent.prototype.tooltip = defaultTooltip;
 
 	PullRequestEvent.prototype.combine = function (push) {
 		if (push instanceof PullRequestEvent && push.repo === this.repo && push.user.login === this.user.login && push.bucket === this.bucket && push.event.payload.number === this.event.payload.number) {
