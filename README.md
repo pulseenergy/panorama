@@ -11,6 +11,10 @@ Here's how Panorama helps:
 
 ## See it in action
 
+![Panorama screenshot](https://cloud.githubusercontent.com/assets/438545/10493836/1c48a958-7268-11e5-9e92-7099e76f2052.png)
+
+
+
 http://panorama.pulseenergy.com
 
 
