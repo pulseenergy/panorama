@@ -704,7 +704,7 @@ var Panorama = (function () {
 		}).fail(function (err) {
 			console.error(err);
 			viewModel.loading(false);
-			viewModel.error("couldn't fetch fetch activity for " + org.login);
+			viewModel.error(`couldn't fetch fetch activity for '${org.login || 'unknown'}'`);
 		});
 	}
 
