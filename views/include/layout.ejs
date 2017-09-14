@@ -18,7 +18,7 @@
 	<script src="js/svg.min.js" type="text/javascript"></script>
 	<script src="js/panorama.js" type="text/javascript"></script>
 	<script>
-		var panorama = new Panorama(<%- JSON.stringify(user ? user.organizations : [{ login: 'pulseenergy' }]) %>);
+		var panorama = new Panorama(<%- JSON.stringify(user ? user.organizations : [{ login: 'github' }]) %>);
 		window.onload = function () {
 			panorama.init();
 		};
