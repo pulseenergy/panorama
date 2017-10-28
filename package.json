@@ -4,7 +4,7 @@
   "description": "review changes across multiple repositories",
   "main": "app.js",
   "scripts": {
-    "test": "grunt test"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -32,8 +32,7 @@
     "underscore": "~1.6.0"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.10.0",
+    "eslint": "^4.10.0",
     "replay": "^1.12.0"
   }
 }

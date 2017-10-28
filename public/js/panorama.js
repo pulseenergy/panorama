@@ -1,4 +1,6 @@
-var Panorama = (function () {
+/* global _, ko, moment, reqwest, SVG */
+
+var Panorama = (function () { // eslint-disable-line no-unused-vars
 	'use strict';
 
 	var colors = [
@@ -59,7 +61,7 @@ var Panorama = (function () {
 		}
 
 		var adjusts = 0;
-		shadow.forEach(function (row, bucket) {
+		shadow.forEach(function (row) {
 			for (var c = 0; c < row.length; c++) {
 				if (adjusts++ > 5000) {
 					console.log('too many layout iterations, aborting');
@@ -704,7 +706,7 @@ var Panorama = (function () {
 		}).fail(function (err) {
 			console.error(err);
 			viewModel.loading(false);
-			viewModel.error(`couldn't fetch fetch activity for '${org.login || 'unknown'}'`);
+			viewModel.error('couldn\'t fetch fetch activity for ' + (org.login || 'unknown'));
 		});
 	}
 
