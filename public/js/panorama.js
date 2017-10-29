@@ -201,8 +201,13 @@ var Panorama = (function () {
 			},
 			write: function (str) {
 				var view = this.view();
-				history.pushState(null, null, '/' + view + '?organization=' + str);
-				this.organization({ login: str });
+				if (str) {
+					history.pushState(null, null, '/' + view + '?organization=' + str);
+					this.organization({login: str});
+				} else {
+					history.pushState(null, null, '/' + view);
+					this.organization(null);
+				}
 			},
 			owner: this
 		});
