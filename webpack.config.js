@@ -13,5 +13,6 @@ module.exports = {
 	externals: {
 		moment: 'moment',
 		_: 'underscore',
+		SVG: 'SVG'
 	}
 };
