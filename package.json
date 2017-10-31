@@ -5,10 +5,13 @@
   "main": "app.js",
   "scripts": {
     "lint": "eslint ."
+    "test": "npm run lint",
+    "build": "webpack -p",
+    "watch": "webpack -w"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/pulseenergy/panorama.git"
+    "url": "http://github.com/wachunga/panorama.git"
   },
   "keywords": [
     "app",
@@ -33,6 +36,7 @@
   },
   "devDependencies": {
     "eslint": "^4.10.0",
-    "replay": "^1.12.0"
+    "replay": "^1.12.0",
+    "webpack": "^3.8.1"
   }
 }
