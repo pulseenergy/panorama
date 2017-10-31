@@ -207,8 +207,13 @@ function Panorama(organizations) {
 		},
 		write: function (str) {
 			var view = this.view();
-			history.pushState(null, null, '/' + view + '?organization=' + str);
-			this.organization({ login: str });
+      if (str) {
+        history.pushState(null, null, '/' + view + '?organization=' + str);
+        this.organization({login: str});
+      } else {
+        history.pushState(null, null, '/' + view);
+        this.organization(null);
+      }
 		},
 		owner: this
 	});
@@ -363,7 +368,11 @@ Panorama.prototype.getPushTime = function (push) {
 	return this.formatTimeAgo(push.date);
 };
 Panorama.prototype.setFilter = function (type, value) {
-	var state = '/list?organization=' + this.organization().login;
+  var state = '/list';
+  var org = this.organization();
+  if (org) {
+    state += '?organization=' + org.login;
+  }
 	if (type == 'repo' && value) {
 		history.pushState(null, null, state + '&repo=' + value);
 		this.filter(function (push) { return push.repo === value; });
@@ -410,7 +419,11 @@ Panorama.prototype.init = function () {
 	this.view.subscribe(function (view) {
 		var pathname = '/' + view;
 		if (window.location.pathname.indexOf(pathname) !== 0) {
-			history.pushState(null, null, pathname + '?organization=' + this.organization().login);
+      var org = this.organization();
+      if (org) {
+        pathname += '?organization=' + org.login;
+      }
+      history.pushState(null, null, pathname);
 		}
 	}, this);
 
