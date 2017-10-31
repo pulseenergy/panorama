@@ -4,11 +4,14 @@
   "description": "review changes across multiple repositories",
   "main": "app.js",
   "scripts": {
-    "test": "grunt test"
+    "lint": "eslint .",
+    "test": "npm run lint",
+    "build": "webpack -p",
+    "watch": "webpack -w"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/pulseenergy/panorama.git"
+    "url": "http://github.com/wachunga/panorama.git"
   },
   "keywords": [
     "app",
@@ -24,15 +27,16 @@
   "dependencies": {
     "async": "^0.9.0",
     "ejs": "~0.8.5",
+    "ejs-locals": "^1.0.2",
     "everyauth": "~0.4.5",
     "express": "^3.19.0",
     "request": "^2.51.0",
-    "underscore": "~1.6.0",
-    "ejs-locals": "^1.0.2"
+    "svg.js": "^2.6.3",
+    "underscore": "~1.6.0"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.10.0",
-    "replay": "^1.12.0"
+    "eslint": "^4.10.0",
+    "replay": "^1.12.0",
+    "webpack": "^3.8.1"
   }
 }

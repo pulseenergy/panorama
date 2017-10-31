@@ -1,0 +1,9 @@
+extends: eslint:recommended
+env:
+  node: true
+  commonjs: true
+  es6: true
+rules:
+  no-console: off
+  no-constant-condition: [error, { checkLoops: false }]
+  indent: [error, tab]
