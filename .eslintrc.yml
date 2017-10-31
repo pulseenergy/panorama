@@ -6,3 +6,4 @@ env:
 rules:
   no-console: off
   no-constant-condition: [error, { checkLoops: false }]
+  indent: [error, tab]
