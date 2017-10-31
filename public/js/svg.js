@@ -1,3 +1,4 @@
+const _ = require('underscore');
 const SVG = require('SVG');
 const colors = require('./colors');
 
