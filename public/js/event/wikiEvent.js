@@ -1,3 +1,4 @@
+const _ = require('underscore');
 const util = require('../util');
 
 function WikiEvent(event) {

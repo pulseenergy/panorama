@@ -11,6 +11,7 @@ module.exports = {
     path: destination
   },
   externals: {
-    moment: 'moment'
+    moment: 'moment',
+    _: 'underscore',
   }
 };

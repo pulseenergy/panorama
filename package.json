@@ -4,7 +4,7 @@
   "description": "review changes across multiple repositories",
   "main": "app.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
     "test": "npm run lint",
     "build": "webpack -p",
     "watch": "webpack -w"

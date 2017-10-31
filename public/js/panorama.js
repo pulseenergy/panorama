@@ -1,35 +1,10 @@
-/* global _, ko, moment, reqwest, SVG */
+/* global ko, moment, reqwest, SVG */
 'use strict';
 
-var colors = [
-  '#807c59',
-  '#618059',
-  '#73bf60',
-  '#ccae8f',
-  '#806c59',
-  '#bf9060',
-  '#65567a',
-  '#8860bf',
-  '#bfb660',
-  '#cc8f8f',
-  '#bf6060'
-];
-
-function sign(n) {
-  if (isNaN(n)) {
-    return n;
-  }
-  if (n === 0) {
-    return n;
-  }
-  return n > 0 ? 1 : -1;
-
-'use strict';
-
+const _ = require('underscore');
 const PushEvent = require('./event/pushEvent');
 const BranchEvent = require('./event/branchEvent');
 const CommentEvent = require('./event/commentEvent');
-const WikiEvent = require('./event/wikiEvent');
 const TagEvent = require('./event/tagEvent');
 
 var colors = [
@@ -481,22 +456,25 @@ function fetchPushes(viewModel) {
 				pushes.push(new CommentEvent(event));
 			} else if (event.type === 'CreateEvent') {
 				if (event.payload.ref_type === 'tag') {
-					// at least for us, tags are very spammy
-					// pushes.push(new TagEvent(event));
+					pushes.push(new TagEvent(event));
 				} else if (event.payload.ref_type === 'branch') {
 					pushes.push(new BranchEvent(event));
 				} else {
 					console.log(event);
 				}
-			});
-			viewModel.pushes(pushes);
-			viewModel.loading(false);
-		}).fail(function (err) {
-			console.error(err);
-			viewModel.loading(false);
-			viewModel.error('couldn\'t fetch fetch activity for ' + (org.login || 'unknown'));
-		});
-	}
+			} else {
+				// console.log(event.type)
+			}
+		})
+
+		viewModel.pushes(pushes);
+		viewModel.loading(false);
+	}).fail(function (err) {
+		console.error(err);
+		viewModel.loading(false);
+		viewModel.error('couldn\'t fetch fetch activity for ' + (org.login || 'unknown'));
+	});
+}
 
 function compressPushes(pushes) {
 	var compressed = [];
