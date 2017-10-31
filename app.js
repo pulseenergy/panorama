@@ -24,7 +24,7 @@ if (process.env.GITHUB_API_TOKEN) {
 	var secret = process.env.GITHUB_APP_SECRET;
 	if (!id || !secret) {
 		console.error('github auth environment variables not found -- see README');
-		return process.exit(1);
+		process.exit(1);
 	}
 	console.log('github auth via registered oauth application');
 	app.use(require('./lib/everyauth')(id, secret));
@@ -68,7 +68,7 @@ app.get('/lanes', loadUserOrganizations, function (req, res) {
 app.get('/a/organization/:organization/events', actions.getOrgEvents);
 app.get('/a/user/events', checkAuth401, actions.getUserEvents);
 
-app.use(function handleError(err, req, res, next) {
+app.use(function handleError(err, req, res, next) { // eslint-disable-line no-unused-vars
 	console.error(err.stack);
 	res.send(500);
 });

@@ -1,3 +1,29 @@
+/* global _, ko, moment, reqwest, SVG */
+'use strict';
+
+var colors = [
+  '#807c59',
+  '#618059',
+  '#73bf60',
+  '#ccae8f',
+  '#806c59',
+  '#bf9060',
+  '#65567a',
+  '#8860bf',
+  '#bfb660',
+  '#cc8f8f',
+  '#bf6060'
+];
+
+function sign(n) {
+  if (isNaN(n)) {
+    return n;
+  }
+  if (n === 0) {
+    return n;
+  }
+  return n > 0 ? 1 : -1;
+
 'use strict';
 
 const PushEvent = require('./event/pushEvent');
@@ -63,13 +89,13 @@ function drawLanesSvg(underlay) {
 		}
 	}
 
-	var adjusts = 0;
-	shadow.forEach(function (row, bucket) {
-		for (var c = 0; c < row.length; c++) {
-			if (adjusts++ > 5000) {
-				console.log('too many layout iterations, aborting');
-				return;
-			}
+  var adjusts = 0;
+  shadow.forEach(function (row) {
+    for (var c = 0; c < row.length; c++) {
+      if (adjusts++ > 5000) {
+        console.log('too many layout iterations, aborting');
+        return;
+      }
 
 			var current = row[c];
 			var previous = row[c - 1];
@@ -462,20 +488,15 @@ function fetchPushes(viewModel) {
 				} else {
 					console.log(event);
 				}
-			} else if (event.type === 'GollumEvent') {
-				pushes.push(new WikiEvent(event));
-			} else {
-				// console.log(event.type)
-			}
+			});
+			viewModel.pushes(pushes);
+			viewModel.loading(false);
+		}).fail(function (err) {
+			console.error(err);
+			viewModel.loading(false);
+			viewModel.error('couldn\'t fetch fetch activity for ' + (org.login || 'unknown'));
 		});
-		viewModel.pushes(pushes);
-		viewModel.loading(false);
-	}).fail(function (err) {
-		console.error(err);
-		viewModel.loading(false);
-		viewModel.error(`couldn't fetch fetch activity for '${org.login || 'unknown'}'`);
-	});
-}
+	}
 
 function compressPushes(pushes) {
 	var compressed = [];
