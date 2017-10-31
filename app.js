@@ -32,6 +32,7 @@ if (process.env.GITHUB_API_TOKEN) {
 
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/dist'));
 
 app.get('/', function (req, res) {
 	res.redirect('/lanes');
