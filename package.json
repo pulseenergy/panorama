@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^0.9.0",
-    "ejs": "~0.8.5",
+    "ejs": "2.5.5",
     "everyauth": "~0.4.5",
     "express": "^3.19.0",
     "request": "^2.51.0",
