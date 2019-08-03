@@ -184,6 +184,9 @@ var Panorama = (function () {
 		});
 	}
 
+	var availableThemes = ['light', 'clouds'];
+	var cacheThemeKey = 'panorama-theme';
+
 	function Panorama(organizations) {
 		this.organizations = ko.observableArray(organizations);
 		this.organization = ko.observable(_.first(organizations));
@@ -193,6 +196,7 @@ var Panorama = (function () {
 		this.pushes = ko.observableArray();
 		this.filter = ko.observable();
 		this.laneLabelVisible = ko.observable(false);
+		this.theme = localStorage.getItem(cacheThemeKey) || availableThemes[0];
 
 		this.organizationInput = ko.computed({
 			read: function () {
@@ -345,6 +349,15 @@ var Panorama = (function () {
 	Panorama.prototype.switchView = function () {
 		var next = { list: 'lanes', lanes: 'list' };
 		this.view(next[this.view()]);
+	};
+
+	Panorama.prototype.switchTheme = function () {
+		var index = availableThemes.indexOf(this.theme);
+		var nextTheme = availableThemes[++index % availableThemes.length];
+
+		this.theme = nextTheme;
+		document.querySelectorAll('meta[http-equiv=Default-Style]')[0].content = nextTheme;
+		localStorage.setItem(cacheThemeKey, nextTheme);
 	};
 	Panorama.prototype.getRepository = function (repoName) {
 		var repo = _.findWhere(this.repos(), {name: repoName});

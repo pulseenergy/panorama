@@ -166,18 +166,6 @@ body > svg:last-child {
 .pushes.bucket-color-10 {
 	background-color: #bf6060;
 }
-.push-info {
-	position: absolute;
-	color: white;
-	display: inline-block;
-	font: 14px/1 octicons;
-	text-align: center;
-	font-weight: normal;
-	padding: 3px 0;
-	line-height: 1;
-	font-size: 11px;
-	bottom: 0;
-}
 .branch {
 	background: orangered;
 	right: 0;

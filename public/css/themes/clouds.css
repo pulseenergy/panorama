@@ -1,0 +1,12 @@
+/* TODO: logo */
+
+.push-info {
+	position: absolute;
+	color: white;
+	text-shadow: 0 0 5px black, 0 0 2px black, 0 0 1px black;
+	font: 14px/1 octicons;
+}
+
+.fixed-bg {
+	background-image: url(https://ununsplash.imgix.net/photo-1416431168657-a6c4184348ab?q=75&fm=jpg&s=20ba248730c200af0d30c9ba81854867);
+}
